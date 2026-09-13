@@ -1,0 +1,26 @@
+# ---- Python ----
+backend/.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ---- Node ----
+frontend/node_modules/
+frontend/dist/
+
+# ---- 环境与敏感信息（绝不入仓）----
+.env
+*.env
+!.env.example
+
+# ---- 本地数据（SQLite 数据库，含用户数据）----
+backend/data/
+*.db
+
+# ---- 系统 / 工具 ----
+.DS_Store
+.workbuddy/
+
+# ---- 运行时输出 ----
+results/
+logs/
