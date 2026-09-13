@@ -4,7 +4,10 @@
 
 关键函数：
 - start_analyze / get_job：后台分析项目文件夹（识别类型 + 提取关键信息 + 写入记忆）
-- answer：聊天回答（检索事实 -> 生成 -> 四道门 -> 敏感信息过滤 -> 记忆）
+- answer：聊天回答（回读工作记忆历史 -> 关键词召回 -> 生成 -> 四道门 -> 敏感信息过滤 -> 记忆）
+- build_system_instruction（L1 系统指令）/ build_workflow_instruction（L2 工作流指令）：
+  指令三层分层中的静态两层；L3 任务指令由各调用点动态拼入 user message 头部。
+- _retrieve：关键词重叠打分召回 + Top-K 截断（上下文边界：规则进 system，事实进 user）。
 """
 import re
 import threading
@@ -26,10 +29,24 @@ MAX_FILE_TEXT = 12000  # 单文件注入 LLM 的文本上限（字符）
 
 
 # ============================================================
-# 系统提示构建（知识库 + 约束库 + 四道门 + 授权-停下）
+# 指令三层分层：L1 系统指令 / L2 工作流指令 / L3 任务指令。
+# L1 + L2 进 system role；L3 由调用点动态拼入 user message 头部。
 # ============================================================
-def build_system_prompt() -> str:
+def build_system_instruction() -> str:
+    """L1 系统指令：身份、原则、权限/风险边界、四道门、授权-停下、输出要求、知识库、约束库。
+
+    内容长期不变，进入 system role。
+    """
     return f"""你是一名严谨的项目管理智能助手，服务于上海澄岳智能装备有限公司（课程虚构企业）。
+
+## 身份与原则
+- 身份：项目经理的助手，负责「找、核、写、追」，不替代项目经理做决策、不代替授权人表态。
+- 原则：事实优先、来源可溯、边界清晰、宁停不编。
+
+## 权限与风险边界
+- 只做材料整理与建议，不替任何授权人审批、签章、承诺或对外沟通。
+- 涉及财务、合同、人事的结论必须明确标记「需人工复核」。
+- 未获授权的材料不读取，未获确认的事项不推定。
 
 ## 企业知识库
 {knowledge_text()}
@@ -59,6 +76,100 @@ def build_system_prompt() -> str:
 """
 
 
+# ---------- L2 工作流指令：各含步骤 / 校验点 / 输出模板 ----------
+_L2_ANALYZE = """## 工作流指令：文件分析（analyze）
+
+### 步骤
+1. 读取文件内容，判断文件类型：招标文件 / 投标响应 / 合同及补充协议 / 项目管理计划 / 团队与人员清单 / 干系人清单 / 会议邮件记录 / 财务资料 / 问题风险变更 / 其他。
+2. 提取结构化关键信息：事实（facts）、干系人（stakeholders）、财务（finance）、行动项（actions）、冲突（conflicts）。
+3. 为每条信息标注状态并保留原文关键句；没有对应内容时对应数组留空 []。
+
+### 校验点
+1. 只有文件明确写明的才标 confirmed；合理推测标 provisional；无法确定标 needs_confirmation。
+2. 不得编造文件中不存在的人员、金额、日期、联系方式、审批或签章。
+3. 财务金额保留原始口径（含税/不含税、当期/累计）。
+4. 人名保留原文，疑似错字不要擅自合并。
+5. 只输出 JSON，不要输出任何其他文字。
+
+### 输出模板（严格按此 JSON 结构）
+{
+  "file_type": "招标文件|投标响应|合同及补充协议|项目管理计划|团队与人员清单|干系人清单|会议邮件记录|财务资料|问题风险变更|其他",
+  "project_type_hint": "该文件体现的项目类型（如：非标智能装备交付项目）",
+  "facts": [
+    {"category": "项目|人员|财务|干系人|其他", "field": "字段名", "value": "值", "status": "confirmed|provisional|needs_confirmation", "original_excerpt": "原文关键句"}
+  ],
+  "stakeholders": [
+    {"name": "", "organization": "", "role": "", "influence": "", "concern": "", "channel": "", "frequency": "", "owner": ""}
+  ],
+  "finance": [
+    {"category": "预算|合同|应付|开票|支付|成本", "item": "", "amount": "", "tax_inclusive": "含税|不含税|未说明", "period": "当期|累计|未说明", "note": ""}
+  ],
+  "actions": [
+    {"action": "", "owner": "", "due_date": "", "status": "open", "source": ""}
+  ],
+  "conflicts": [
+    {"category": "", "description": "", "source_a": "", "source_b": ""}
+  ]
+}
+"""
+
+_L2_ANSWER = """## 工作流指令：问答（answer）
+
+### 步骤
+1. 读取 user message 中「本次任务指令（L3）」下的「项目事实（关键词召回）」，确认可用材料；同时读取「最近对话历史」以延续上下文。
+2. 结合系统指令中的企业知识库与约束库形成结论；材料不足时按「授权-停下」如实说明。
+3. 每个关键结论标注来源 [来源: 文件名/章节]。
+
+### 校验点
+1. 严格区分「事实 / 推断 / 待确认」，以召回条目自带的状态为准，不把「待确认」当作事实使用。
+2. 项目事实段为「未检索到与问题直接相关的事实」时，不得虚构项目事实，只能依据知识库与通用规则回答，并说明未检索到相关事实。
+3. 财务金额保留原始口径（含税/不含税、当期/累计）；人名保留原文。
+4. 涉及财务/合同/人事的结论标记「需人工复核」。
+
+### 输出模板
+1. 直接结论（一句话）
+2. 依据（分条列出，逐条带 [来源: 文件名/章节] 与事实状态）
+3. 待确认 / 风险（无则写「无」）
+4. 建议下一步（可执行动作，含负责人与时间要求）
+"""
+
+_L2_DOCGEN = """## 工作流指令：文档生成（docgen）
+
+### 步骤
+1. 明确文档类型、读者、用途与时间要求。
+2. 从项目事实与长期记忆中取材，逐条对应到来源。
+3. 按约束库格式要求生成文档草稿。
+
+### 校验点
+1. 不使用无来源的事实；缺失内容显式标注「待补充」。
+2. 不生成不存在的人员、联系方式、金额、日期、审批或签章。
+3. 财务口径与原文一致（含税/不含税、当期/累计）。
+
+### 输出模板
+# 文档标题
+## 1. 背景与目的
+## 2. 正文（分条，关键结论标注 [来源: 文件名/章节]）
+## 3. 待确认事项
+## 4. 附件与参考
+"""
+
+_WORKFLOW_INSTRUCTIONS = {
+    "analyze": _L2_ANALYZE,
+    "answer": _L2_ANSWER,
+    "docgen": _L2_DOCGEN,
+}
+
+
+def build_workflow_instruction(task_type: str) -> str:
+    """L2 工作流指令：按任务类型返回对应的步骤 / 校验点 / 输出模板。
+
+    task_type ∈ {"analyze", "answer", "docgen"}。返回内容拼接在 system role 中 L1 之后。
+    """
+    if task_type not in _WORKFLOW_INSTRUCTIONS:
+        raise ValueError(f"未知工作流类型: {task_type}，应为 analyze/answer/docgen 之一")
+    return _WORKFLOW_INSTRUCTIONS[task_type]
+
+
 # ============================================================
 # 敏感信息过滤
 # ============================================================
@@ -78,41 +189,12 @@ def sanitize(text: str) -> str:
 
 # ============================================================
 # 单文件分析：LLM 识别类型 + 提取结构化信息
+# 输出模板与校验点已上移 L2（analyze），此处只负责承载文件内容（L3 材料）。
 # ============================================================
-_ANALYZE_PROMPT = """请分析下面的项目文件，判断其类型并提取关键信息。
-
-文件内容：
+_ANALYZE_CONTENT = """文件内容：
 ---
 {content}
----
-
-请严格输出 JSON（不要输出任何其他文字），结构如下：
-{{
-  "file_type": "招标文件|投标响应|合同及补充协议|项目管理计划|团队与人员清单|干系人清单|会议邮件记录|财务资料|问题风险变更|其他",
-  "project_type_hint": "该文件体现的项目类型（如：非标智能装备交付项目）",
-  "facts": [
-    {{"category": "项目|人员|财务|干系人|其他", "field": "字段名", "value": "值", "status": "confirmed|provisional|needs_confirmation", "original_excerpt": "原文关键句"}}
-  ],
-  "stakeholders": [
-    {{"name": "", "organization": "", "role": "", "influence": "", "concern": "", "channel": "", "frequency": "", "owner": ""}}
-  ],
-  "finance": [
-    {{"category": "预算|合同|应付|开票|支付|成本", "item": "", "amount": "", "tax_inclusive": "含税|不含税|未说明", "period": "当期|累计|未说明", "note": ""}}
-  ],
-  "actions": [
-    {{"action": "", "owner": "", "due_date": "", "status": "open", "source": ""}}
-  ],
-  "conflicts": [
-    {{"category": "", "description": "", "source_a": "", "source_b": ""}}
-  ]
-}}
-
-严格要求：
-1. 只有文件明确写明的才标 confirmed；合理推测标 provisional；无法确定标 needs_confirmation。
-2. 不得编造文件中不存在的人员、金额、日期、联系方式、审批或签章。
-3. 财务金额保留原始口径（含税/不含税、当期/累计）。
-4. 人名保留原文，疑似错字不要擅自合并。
-5. 没有对应内容时，对应数组留空 []。"""
+---"""
 
 
 def _analyze_single_file(file_path: Path, file_name: str) -> dict:
@@ -132,11 +214,18 @@ def _analyze_single_file(file_path: Path, file_name: str) -> dict:
     if truncated:
         content += "\n...(内容过长，已截断)"
 
-    prompt = _ANALYZE_PROMPT.format(content=content)
+    # L3 任务指令：本次任务目标 / 材料 / 对象 / 时间要求（拼入 user message 头部）
+    l3 = f"""## 本次任务指令（L3）
+- 目标：分析该单个项目文件，识别文件类型并提取结构化关键信息
+- 材料：文件「{file_name}」（{'已按上限截断' if truncated else '全文'}）
+- 对象：该文件本身，不外推到项目其他材料
+- 时间要求：只依据文件现有内容作答，不推测文件未记载的时间点"""
+
+    user_msg = f"{l3}\n\n{_ANALYZE_CONTENT.format(content=content)}"
     try:
         raw = llm_client.chat(
-            [{"role": "system", "content": build_system_prompt()},
-             {"role": "user", "content": prompt}],
+            [{"role": "system", "content": build_system_instruction() + "\n\n" + build_workflow_instruction("analyze")},
+             {"role": "user", "content": user_msg}],
             temperature=0.1,
         )
     except Exception as e:
@@ -248,9 +337,17 @@ def _analyze_worker(project_id: int, job_id: str) -> None:
     if project_type_hints:
         try:
             joined = "；".join(project_type_hints)
+            # L3：简短任务指令（system = L1 + L2(answer)）
+            l3 = f"""## 本次任务指令（L3）
+- 目标：综合各文件的项目类型提示，判断本项目统一类型
+- 材料：{joined}
+- 对象：本项目（{total} 个已分析文件）
+- 时间要求：立即输出一句话，10 字以内
+
+根据上述材料，综合判断本项目的统一类型（一句话，10 字以内）。"""
             raw = llm_client.chat(
-                [{"role": "system", "content": build_system_prompt()},
-                 {"role": "user", "content": f"根据以下各文件的项目类型提示，综合判断本项目的统一类型（一句话，10字以内）：{joined}"}],
+                [{"role": "system", "content": build_system_instruction() + "\n\n" + build_workflow_instruction("answer")},
+                 {"role": "user", "content": l3}],
                 temperature=0.1, max_tokens=100,
             )
             project_type = raw.strip().strip('"').strip("。")
@@ -352,54 +449,164 @@ def _facts_to_text(facts: list[dict]) -> str:
     return "\n".join(lines)
 
 
+# ============================================================
+# 检索召回：关键词重叠打分 + Top-K 截断（零新增依赖）
+# ============================================================
+_KEYWORD_PATTERN = re.compile(r"[\u4e00-\u9fff]{2,}|[A-Za-z]+")
+
+# 各类条目 Top-K 上限
+_TOP_K = {"facts": 20, "actions": 10, "finance": 10, "stakeholders": 8, "conflicts": 12}
+
+# 各类条目的打分字段口径
+_SCORE_FIELDS = {
+    "facts": ("field", "value", "category"),
+    "actions": ("action", "owner"),
+    "finance": ("item", "category"),
+    "stakeholders": ("name", "organization", "role"),
+    "conflicts": ("description",),
+}
+
+
+def _keywords(text: str) -> list[str]:
+    """提取关键词：长度 ≥2 的连续汉字片段 + 英文单词，去重（保持出现顺序）。"""
+    words: list[str] = []
+    for m in _KEYWORD_PATTERN.finditer(text or ""):
+        w = m.group(0)
+        if w not in words:
+            words.append(w)
+    return words
+
+
+def _overlap_score(keywords: list[str], text: str) -> int:
+    """关键词与条目文本的重叠命中数（score）。
+
+    中文无空格、问句常连写，故命中判定为双向：
+    - 正向：关键词作为子串出现在条目文本中（问句「预算」命中字段「项目预算」）；
+    - 反向：条目文本中的片段（≥2 汉字片段 / 英文词）整体出现在关键词内
+      （问句连写「项目预算是多少」命中字段「预算」）。
+    """
+    haystack = str(text or "")
+    if not haystack:
+        return 0
+    frags = _keywords(haystack)
+    score = 0
+    for kw in keywords:
+        if kw in haystack or any(frag in kw for frag in frags):
+            score += 1
+    return score
+
+
+def _topk(rows: list[dict], keywords: list[str], fields: tuple[str, ...], limit: int) -> list[dict]:
+    """返回 score>0 且按 score 降序的前 limit 条（同分保持原顺序）。"""
+    scored: list[tuple[int, dict]] = []
+    for r in rows:
+        text = " ".join(str(r.get(f, "")) for f in fields)
+        s = _overlap_score(keywords, text)
+        if s > 0:
+            scored.append((s, r))
+    scored.sort(key=lambda x: -x[0])
+    return [r for _, r in scored[:limit]]
+
+
+def _retrieve(question: str, facts: list[dict], stakeholders: list[dict],
+              finance: list[dict], actions: list[dict], conflicts: list[dict]) -> dict:
+    """关键词召回与问题相关的条目（facts≤20、actions≤10、finance≤10、stakeholders≤8、conflicts≤12）。
+
+    返回召回后的各表子集；无命中时对应列表为空。
+    """
+    kws = _keywords(question)
+    if not kws:
+        return {"facts": [], "stakeholders": [], "finance": [], "actions": [], "conflicts": []}
+    return {
+        "facts": _topk(facts, kws, _SCORE_FIELDS["facts"], _TOP_K["facts"]),
+        "stakeholders": _topk(stakeholders, kws, _SCORE_FIELDS["stakeholders"], _TOP_K["stakeholders"]),
+        "finance": _topk(finance, kws, _SCORE_FIELDS["finance"], _TOP_K["finance"]),
+        "actions": _topk(actions, kws, _SCORE_FIELDS["actions"], _TOP_K["actions"]),
+        "conflicts": _topk(conflicts, kws, _SCORE_FIELDS["conflicts"], _TOP_K["conflicts"]),
+    }
+
+
+_ROLE_CN = {"user": "用户", "assistant": "助手"}
+
+
 def answer(project_id: int, question: str, session_id: str = "default") -> dict:
-    """聊天回答。返回 {answer, sources, stopped}。"""
+    """聊天回答。返回 {answer, sources, stopped}。
+
+    上下文边界：L1（+L2）承载通用规则上下文；user message（L3）承载项目事实上下文
+    （召回条目）与当前任务上下文（本次问题 + 工作记忆历史）。
+    """
     proj = db.query("SELECT * FROM projects WHERE id=?", (project_id,))
     if not proj:
         return {"answer": "项目不存在。", "sources": [], "stopped": False}
 
-    # 1. 找：检索项目事实 + 长期记忆 + 干系人 + 财务 + 行动项
-    facts = db.query("SELECT * FROM facts WHERE project_id=? ORDER BY id", (project_id,))
+    # 1. 找：先回读工作记忆历史（在写入本条用户消息之前），再做关键词召回
+    history = mem.get_working(project_id, session_id, limit=8)
+    facts_all = db.query("SELECT * FROM facts WHERE project_id=? ORDER BY id", (project_id,))
+    stakeholders_all = db.query("SELECT * FROM stakeholders WHERE project_id=?", (project_id,))
+    finance_all = db.query("SELECT * FROM finance WHERE project_id=?", (project_id,))
+    actions_all = db.query("SELECT * FROM actions WHERE project_id=?", (project_id,))
+    conflicts_all = db.query("SELECT * FROM conflicts WHERE project_id=?", (project_id,))
     longterm = mem.get_longterm_text(project_id)
-    stakeholders = db.query("SELECT * FROM stakeholders WHERE project_id=?", (project_id,))
-    finance = db.query("SELECT * FROM finance WHERE project_id=?", (project_id,))
-    actions = db.query("SELECT * FROM actions WHERE project_id=?", (project_id,))
-    conflicts = db.query("SELECT * FROM conflicts WHERE project_id=?", (project_id,))
 
-    stake_text = "\n".join(f"- {s['name']}({s['organization']}/{s['role']})" for s in stakeholders) or "（无）"
-    fin_text = "\n".join(f"- [{f['category']}] {f['item']}: {f['amount']} ({f['tax_inclusive']}/{f['period']}) [来源:{f['source']}]" for f in finance) or "（无）"
-    act_text = "\n".join(f"- {a['action']} 负责人:{a['owner']} 期限:{a['due_date']} 状态:{a['status']}" for a in actions) or "（无）"
-    conf_text = "\n".join(f"- [{c['category']}] {c['description']}" for c in conflicts) or "（无）"
+    recalled = _retrieve(question, facts_all, stakeholders_all, finance_all, actions_all, conflicts_all)
+    facts, stakeholders = recalled["facts"], recalled["stakeholders"]
+    finance, actions, conflicts = recalled["finance"], recalled["actions"], recalled["conflicts"]
 
-    context = f"""## 项目：{proj[0]['name']}（类型：{proj[0]['project_type'] or '未识别'}）
-
-## 已确认事实（证据台账）
+    # 项目事实上下文（召回为空时兜底：不注入项目事实，仅凭知识库与通用规则回答）
+    if not (facts or stakeholders or finance or actions or conflicts):
+        fact_block = "未检索到与问题直接相关的事实"
+    else:
+        stake_text = "\n".join(f"- {s['name']}({s['organization']}/{s['role']})" for s in stakeholders) or "（无）"
+        fin_text = "\n".join(
+            f"- [{f['category']}] {f['item']}: {f['amount']} ({f['tax_inclusive']}/{f['period']}) [来源:{f['source']}]"
+            for f in finance) or "（无）"
+        act_text = "\n".join(
+            f"- {a['action']} 负责人:{a['owner']} 期限:{a['due_date']} 状态:{a['status']}" for a in actions) or "（无）"
+        conf_text = "\n".join(f"- [{c['category']}] {c['description']}" for c in conflicts) or "（无）"
+        fact_block = f"""### 已确认事实（证据台账，召回 {len(facts)}/{len(facts_all)} 条）
 {_facts_to_text(facts)}
 
-## 干系人
+### 干系人（召回 {len(stakeholders)}/{len(stakeholders_all)} 条）
 {stake_text}
 
-## 财务
+### 财务（召回 {len(finance)}/{len(finance_all)} 条）
 {fin_text}
 
-## 行动项
+### 行动项（召回 {len(actions)}/{len(actions_all)} 条）
 {act_text}
 
-## 冲突/待确认
+### 冲突/待确认（召回 {len(conflicts)}/{len(conflicts_all)} 条）
 {conf_text}
 
-## 长期记忆
+### 长期记忆
 {longterm or '（无）'}"""
 
-    user_msg = f"{context}\n\n用户问题：{question}"
+    history_text = "\n".join(
+        f"- {_ROLE_CN.get(h['role'], h['role'])}：{h['content']}" for h in history) or "（无）"
 
-    # 保存工作记忆（用户消息）
+    # L3 任务指令：本次任务目标 / 材料 / 对象 / 时间要求 + 项目事实上下文 + 最近对话历史
+    user_msg = f"""## 本次任务指令（L3）
+- 目标：回答用户关于本项目的问题，并延续最近对话历史
+- 材料：项目事实关键词召回结果 + 长期记忆 + 最近 {len(history)} 条工作记忆
+- 对象：项目「{proj[0]['name']}」（类型：{proj[0]['project_type'] or '未识别'}）
+- 时间要求：仅基于下述材料作答；材料不足时按「授权-停下」如实说明，不编造
+
+## 项目事实（关键词召回）
+{fact_block}
+
+## 最近对话历史
+{history_text}
+
+## 用户问题
+{question}"""
+
+    # 保存工作记忆（用户消息）——必须在回读历史之后，避免当前问题重复进入上下文
     mem.save_working(project_id, session_id, "user", question)
 
-    # 2-4. 核+写+追：生成回答
+    # 2-4. 核+写+追：生成回答（system = L1 + L2(answer)）
     try:
         raw = llm_client.chat(
-            [{"role": "system", "content": build_system_prompt()},
+            [{"role": "system", "content": build_system_instruction() + "\n\n" + build_workflow_instruction("answer")},
              {"role": "user", "content": user_msg}],
         )
     except Exception as e:
