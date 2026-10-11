@@ -503,3 +503,36 @@ body {
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ===== 数据智能与决策 ===== */
+.datasmart { padding: 20px; max-width: 1200px; }
+.datasmart-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.datasmart-header h2 { margin: 0; }
+.datasmart-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.datasmart-controls select { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; background: #fff; }
+.datasmart-controls button { padding: 6px 14px; border: none; border-radius: 6px; background: #4f46e5; color: #fff; cursor: pointer; }
+.datasmart-controls button:disabled { background: #cbd5e1; cursor: not-allowed; }
+.datasmart-path { font-size: 12px; color: #94a3b8; }
+.datasmart-msg { margin: 10px 0; padding: 8px 12px; background: #eef2ff; color: #4338ca; border-radius: 6px; font-size: 13px; }
+.datasmart-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+.datasmart-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }
+.datasmart-card .num { font-size: 24px; font-weight: 700; color: #1e293b; }
+.datasmart-card .num.small { font-size: 16px; }
+.datasmart-card .label { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.datasmart-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
+.datasmart-tab { padding: 6px 14px; border-radius: 999px; background: #fff; border: 1px solid #e2e8f0; cursor: pointer; font-size: 13px; }
+.datasmart-tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.datasmart-board { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; min-height: 120px; }
+.datasmart-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.datasmart-chart h4, .datasmart-forecast h4, .datasmart-metrics h4 { margin: 4px 0 8px; font-size: 14px; }
+.datasmart-empty { color: #94a3b8; font-size: 13px; padding: 24px; text-align: center; }
+.datasmart-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.datasmart-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-weight: 600; white-space: nowrap; }
+.datasmart-table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+.datasmart-forecast table { font-size: 13px; }
+.datasmart-forecast td { padding: 4px 10px 4px 0; color: #334155; }
+.datasmart-section { margin: 18px 0; }
+.datasmart-section h3 { margin: 0 0 8px; font-size: 15px; }
+.datasmart-advice-list { display: grid; gap: 10px; }
+.datasmart-advice { background: #fff; border: 1px solid #e2e8f0; border-left: 3px solid #4f46e5; border-radius: 8px; padding: 10px 14px; font-size: 13px; line-height: 1.7; }
+@media (max-width: 900px) { .datasmart-cards { grid-template-columns: repeat(2, 1fr); } .datasmart-charts { grid-template-columns: 1fr; } }

@@ -38,4 +38,14 @@ export const api = {
   generateDoc: (id, title, content) =>
     request(`/projects/${id}/documents/generate`, { method: 'POST', body: JSON.stringify({ title, content }) }),
   deleteDocument: (docId) => request(`/projects/documents/${docId}`, { method: 'DELETE' }),
+  // 数据智能与决策
+  runDataSmart: (id) => request(`/projects/${id}/datasmart/run`, { method: 'POST' }),
+  dataSmartRunStatus: (id, jobId) => request(`/projects/${id}/datasmart/run/status/${jobId}`),
+  dataSmartOverview: (id) => request(`/projects/${id}/datasmart/overview`),
+  dataSmartBoard: (id, kind) => request(`/projects/${id}/datasmart/board/${kind}`),
+  dataSmartSnapshots: (id) => request(`/projects/${id}/datasmart/snapshots`),
+  dataSmartAdvise: (id) => request(`/projects/${id}/datasmart/advise`, { method: 'POST' }),
+  dataSmartAlerts: (id) => request(`/projects/${id}/datasmart/alerts`),
+  dataSmartCleanlogs: (id) => request(`/projects/${id}/datasmart/cleanlogs`),
+  dataSmartForecast: (id) => request(`/projects/${id}/datasmart/forecast`),
 }

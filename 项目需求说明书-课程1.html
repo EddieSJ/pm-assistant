@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目管理智能助手 — 项目需求说明书（课程1）</title>
+<style>
+:root{
+  --bg:#f6f8fb; --card:#ffffff; --ink:#182235; --muted:#5b6779;
+  --border:#e3e8f0; --accent:#2563eb; --accent-soft:#eef4ff;
+  --done:#16a34a; --done-soft:#e9f9ef; --todo:#8a94a6; --todo-soft:#f1f3f7;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.75;font-size:15px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 80px}
+header{padding:48px 0 28px;border-bottom:1px solid var(--border);margin-bottom:36px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.4px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(37,99,235,.5);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}70%{box-shadow:0 0 0 8px rgba(37,99,235,0)}100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}}
+h1{font-size:30px;margin:10px 0 12px;line-height:1.3}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.badge{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid #d5e2fb}
+.badge.v{background:#fff;color:var(--muted);border-color:var(--border)}
+.lead{margin-top:16px;color:var(--muted);font-size:14.5px;max-width:860px}
+nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:32px}
+nav.toc h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 10px}
+nav.toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px}
+nav.toc li{margin:4px 0;font-size:13.5px;break-inside:avoid}
+section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:26px}
+h2{font-size:21px;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+h2 .n{color:var(--accent);font-family:var(--mono);font-size:15px;background:var(--accent-soft);border-radius:6px;padding:2px 9px}
+h3{font-size:16px;margin:24px 0 10px}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:24px}
+li{margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+th{background:var(--accent-soft);color:var(--ink);text-align:left;font-weight:600;padding:9px 12px;border:1px solid var(--border)}
+td{padding:8px 12px;border:1px solid var(--border);vertical-align:top}
+tr:nth-child(even) td{background:#fafbfd}
+td code{background:#f1f3f7;padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:12.5px}
+.s-done{display:inline-block;font-size:11.5px;font-weight:600;color:var(--done);background:var(--done-soft);border:1px solid #bfe8cf;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.s-todo{display:inline-block;font-size:11.5px;font-weight:600;color:var(--todo);background:var(--todo-soft);border:1px solid #dde2ea;padding:1px 8px;border-radius:999px;white-space:nowrap}
+code{font-family:var(--mono);font-size:13px}
+blockquote{border-left:3px solid var(--accent);background:var(--accent-soft);margin:14px 0;padding:10px 16px;border-radius:0 8px 8px 0;color:#33415c}
+blockquote p{margin:4px 0}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;text-align:center;padding:20px}
+@media(max-width:720px){nav.toc ol{columns:1}section{padding:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker"><span class="dot"></span>项目需求说明书 · PRD</div>
+  <h1>项目管理智能助手 — 项目需求说明书<br><span style="font-size:22px;color:var(--accent)">课程1：智能文档与知识工作流</span></h1>
+  <div class="meta">
+    <span class="badge v">版本 v1.0.0</span>
+    <span class="badge v">更新 2026-10-11</span>
+    <span class="badge">38 项功能已实现（F-01~F-38）</span>
+    <span class="badge v">对应课件：课程1PPT.pdf</span>
+  </div>
+  <p class="lead">课程1 主题：智能文档与知识工作流（Agent 核心组件、文档效率、知识管理与干系人沟通）。本文档定义该阶段的功能需求、业务规则与约束，作为开发、验收与迭代基准。</p>
+</header>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#s1">1. 引言</a></li>
+    <li><a href="#s2">2. 项目概述</a></li>
+    <li><a href="#s3">3. 功能需求</a></li>
+    <li><a href="#s4">4. 功能清单（总表）</a></li>
+    <li><a href="#s5">5. 非功能需求</a></li>
+    <li><a href="#s6">6. 数据需求</a></li>
+    <li><a href="#s7">7. 业务规则与约束</a></li>
+    <li><a href="#s8">8. 后续迭代约定</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>引言</h2>
+  <h3>1.1 编写目的</h3>
+  <p>本文档定义「项目管理智能助手」平台在<strong>课程1「智能文档与知识工作流」</strong>阶段的功能需求、业务规则与约束，作为开发、验收与后续迭代的基准。平台是一个<strong>私人本地部署</strong>的项目管理智能体 Web 应用：通过外部 env 接入大模型 API，自动识别项目文件夹中的各类文档，提取关键信息并沉淀到本地记忆体，实现「有据可依、有理有据、有记忆、有标准」的项目管理中枢。</p>
+
+  <h3>1.2 项目范围</h3>
+  <ul>
+    <li><strong>在范围（课程1 已实现）</strong>：项目全局管理、文件自动识别、项目看板可视化、智能聊天问答、Word 文档生成、三层记忆沉淀。</li>
+    <li><strong>不在范围</strong>：多用户权限体系、云端部署、移动端、向量数据库检索（当前版本不引入）；课程2「数据智能与决策支持」规划功能（见《项目需求说明书-课程2》）。</li>
+  </ul>
+
+  <h3>1.3 目标用户</h3>
+  <p>项目经理（个人使用），服务于虚构企业「上海澄岳智能装备有限公司」的教学场景。</p>
+
+  <h3>1.4 术语定义</h3>
+  <table>
+    <tr><th>术语</th><th>定义</th></tr>
+    <tr><td>事实（Fact）</td><td>从项目文件中提取的结构化关键信息，带状态与来源</td></tr>
+    <tr><td>证据链</td><td>文件 → 证据 → 事实 → 判断 → 行动 → 记忆沉淀 的追溯链路</td></tr>
+    <tr><td>四道门</td><td>事实门 → 结构门 → 可用性门 → 风险门 的输出纪律</td></tr>
+    <tr><td>授权-停下</td><td>缺料 / 不可验证 / 权限不足 / 未确认时主动停下，不编造</td></tr>
+    <tr><td>三层记忆</td><td>工作记忆 / 任务记忆 / 长期记忆</td></tr>
+    <tr><td>干系人</td><td>项目相关方（甲方 / 乙方团队、影响方等）</td></tr>
+    <tr><td>三层指令</td><td>系统指令（L1）/ 工作流指令（L2）/ 任务指令（L3）三层的提示词治理结构</td></tr>
+    <tr><td>上下文边界</td><td>通用规则 / 项目事实 / 当前任务 三类上下文的分层承载约定</td></tr>
+  </table>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>项目概述</h2>
+  <h3>2.1 背景</h3>
+  <p>项目经理面对大量项目文档（标书、合同、计划、团队清单、干系人清单、会议记录、财务资料、问题风险记录），需要快速、准确地掌握项目全貌并支持决策。传统人工整理耗时且易遗漏。项目时间真正耗在「找、核、写、追」四件事上——信息分散定位难、口径核对难、反复改写低效、责任闭环易缺失。</p>
+
+  <h3>2.2 建设目标</h3>
+  <p>构建一个「有据可依、有理有据、有记忆、有标准」的本地项目管理中枢：</p>
+  <ol>
+    <li><strong>有据可依</strong>：所有结论可追溯到具体来源文件与原文。</li>
+    <li><strong>有理有据</strong>：回答基于已确认事实，不编造。</li>
+    <li><strong>有记忆</strong>：三层记忆沉淀，杜绝幻觉与重复劳动。</li>
+    <li><strong>有标准</strong>：遵循企业知识库与文件处理约束库的规范。</li>
+  </ol>
+
+  <h3>2.3 技术栈（概要）</h3>
+  <p>React 18 + Vite 5（前端）｜ FastAPI（后端）｜ SQLite（数据库）｜ 阿里云百炼 DashScope 千问 qwen-plus（大模型）。详见《技术架构.md》。</p>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>功能需求</h2>
+  <blockquote><p>课程1 共 38 项已实现功能，编号 F-01 ~ F-38。课程2 功能编号延续（F-39 ~ F-60），见《项目需求说明书-课程2》。</p></blockquote>
+
+  <h3>3.1 项目全局管理</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-01</td><td>项目创建</td><td>填写项目名称、选择 / 输入项目文件夹路径、可选描述，创建项目</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-02</td><td>项目查询</td><td>列表展示全部项目，含类型、描述、各维度数据计数、更新时间</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-03</td><td>项目编辑</td><td>修改项目名称 / 文件夹路径 / 描述</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-04</td><td>项目删除</td><td>删除项目，级联清理该项目下的全部识别数据与记忆</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-05</td><td>全局统计</td><td>顶部统计卡展示项目总数、已提取事实、干系人、行动项</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-06</td><td>本地目录浏览</td><td>后端提供目录浏览接口，前端选择项目文件夹（仅展示受支持扩展名，隐藏系统隐藏目录）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+
+  <h3>3.2 文件自动识别（后台分析）</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-07</td><td>多格式解析</td><td>解析 .md / .pdf / .docx / .xlsx / .txt 为纯文本</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-08</td><td>文件类型识别</td><td>LLM 自动区分文件类型（招标 / 投标 / 合同 / 计划 / 团队 / 干系人 / 会议邮件 / 财务 / 问题风险 / 其他），无需人工告知</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-09</td><td>结构化信息提取</td><td>从每个文件提取事实（facts）、干系人（stakeholders）、财务（finance）、行动项（actions）、冲突（conflicts）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-10</td><td>后台异步执行</td><td>分析任务在后台线程运行，前端轮询进度条；分析为追加写入模式，重复识别会累积重复记录，需删除项目重建才能清零</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-11</td><td>项目类型综合判断</td><td>汇总各文件类型提示，由 LLM 综合判断统一项目类型</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-12</td><td>原文留存</td><td>每个来源文件内容留存 sources 表，支持证据追溯；单文件注入 LLM 上限 12000 字符，超出截断</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-13</td><td>容错兜底</td><td>单文件解析 / 识别失败不中断整条流水线，记录为冲突项</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+
+  <h3>3.3 项目看板</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-14</td><td>概览看板</td><td>KPI 指标卡（合同总金额 / 干系人 / 行动项 / 冲突待确认 / 已确认事实）+ 项目核心信息</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-15</td><td>财务金额分布</td><td>柱状图展示财务金额按类别分布</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-16</td><td>干系人分布</td><td>饼图展示干系人按单位分布（干系人取 Top 8 单位）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-17</td><td>事实确认度</td><td>饼图展示事实状态分布（已确认 / 待核实 / 待确认）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-18</td><td>冲突风险提示</td><td>清单展示冲突与待确认事项（类别 + 描述；冲突清单最多显示 12 条）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-19</td><td>事实台账</td><td>表格展示事实（分类 / 字段 / 值 / 状态 / 来源）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-20</td><td>干系人明细</td><td>表格展示干系人（姓名 / 单位 / 角色 / 影响力 / 关注点 / 沟通渠道）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-21</td><td>财务明细</td><td>表格展示财务（类别 / 项目 / 金额 / 口径 / 来源 / 备注），标注需财务复核</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-22</td><td>行动项明细</td><td>表格展示行动项（行动 / 负责人 / 期限 / 状态 / 来源）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-23</td><td>冲突 / 待确认明细</td><td>表格展示冲突（类别 / 描述 / 来源 A / 来源 B）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-24</td><td>来源文件清单</td><td>表格展示已加载文件（文件名 / 识别类型 / 加载时间）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+
+  <h3>3.4 智能聊天（项目智能助手）</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-25</td><td>基于事实问答</td><td>回答基于「关键词召回」的相关项目事实（facts / 干系人 / 财务 / 行动项 / 冲突，Top-K 截断）+ 长期记忆，不再全量注入</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-26</td><td>来源标注</td><td>每个关键结论标注 [来源: 文件名]，回答下方展示来源文件列表</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-27</td><td>Markdown 渲染</td><td>回答以 Markdown 富文本渲染（含表格 / 列表）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-28</td><td>聊天历史</td><td>持久化聊天记录，重进页面可加载历史</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-29</td><td>工作记忆</td><td>问答内容写入工作记忆，并在下一轮问答时回读最近 N 轮（默认 8 条）参与上下文，实现跨轮记忆</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+
+  <h3>3.5 文档生成</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-30</td><td>综合整理报告</td><td>基于看板数据（事实 / 干系人 / 财务 / 行动项 / 冲突）一键生成 Word 报告</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-31</td><td>自定义文档生成</td><td>由标题 + Markdown 内容生成 Word</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-32</td><td>版本管理</td><td>同标题文档版本自动递增（v1.0 → v1.1 → v1.2 …）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-33</td><td>文档下载</td><td>生成的 Word 可在线下载</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-34</td><td>文档删除</td><td>删除文档记录与磁盘文件</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-35</td><td>文档清单展示</td><td>按项目列出已生成文档的标题 / 版本号 / 生成时间，并提供下载与删除入口</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+
+  <h3>3.6 三层记忆</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-36</td><td>工作记忆</td><td>会话上下文（memories_working 表）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-37</td><td>任务记忆</td><td>对齐 memory_schema.json，分析完成后重建，并回写 current_task_memory.json</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-38</td><td>长期记忆</td><td>沉淀项目知识 / 结论 / 标准（如「项目类型」），供后续回答引用</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>功能清单（总表）</h2>
+  <table>
+    <tr><th>模块</th><th>功能数</th><th>核心功能</th></tr>
+    <tr><td>项目全局管理</td><td>6（F-01~F-06）</td><td>增删改查、目录浏览、全局统计</td></tr>
+    <tr><td>文件自动识别</td><td>7（F-07~F-13）</td><td>多格式解析、类型识别、结构化提取、异步执行、容错</td></tr>
+    <tr><td>项目看板</td><td>11（F-14~F-24）</td><td>概览 KPI + 图表 + 7 类明细台账</td></tr>
+    <tr><td>智能聊天</td><td>5（F-25~F-29）</td><td>基于事实问答、来源标注、Markdown、历史</td></tr>
+    <tr><td>文档生成</td><td>6（F-30~F-35）</td><td>综合报告、自定义文档、版本管理、下载删除、文档清单</td></tr>
+    <tr><td>三层记忆</td><td>3（F-36~F-38）</td><td>工作 / 任务 / 长期记忆</td></tr>
+  </table>
+  <blockquote><p><strong>课程1 合计：38 项功能已实现。</strong></p></blockquote>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>非功能需求</h2>
+  <table>
+    <tr><th>编号</th><th>类别</th><th>需求</th></tr>
+    <tr><td>N-01</td><td>部署形态</td><td>本地 localhost 单端口部署，不依赖云端存储</td></tr>
+    <tr><td>N-02</td><td>数据本地化</td><td>项目数据与记忆全部落本地 SQLite + 本地文件</td></tr>
+    <tr><td>N-03</td><td>凭据安全</td><td>API Key 仅存本地 .env，绝不硬编码 / 打印 / 落库 / 上传</td></tr>
+    <tr><td>N-04</td><td>敏感信息</td><td>身份证 / 手机号 / 银行卡 / API Key 输出前隐藏，不写入记忆</td></tr>
+    <tr><td>N-05</td><td>授权边界</td><td>Agent 只准备草稿与整理结果，不自动外发 / 审批</td></tr>
+    <tr><td>N-06</td><td>可追溯性</td><td>每个结论可追溯到来源文件与原文</td></tr>
+    <tr><td>N-07</td><td>容错性</td><td>单文件失败不中断整体分析，以冲突项兜底</td></tr>
+    <tr><td>N-08</td><td>并发安全</td><td>后台分析线程与请求线程共享 SQLite，由 threading.Lock 串行化写；分析进度为进程内内存态（_jobs），非持久化、不跨 worker</td></tr>
+  </table>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>数据需求</h2>
+  <h3>6.1 数据来源（课程1）</h3>
+  <p>课程资料目录（<code>PM_ASSISTANT_BASE_DIR</code> 指向）下的：</p>
+  <ul>
+    <li><code>02_千问API与env配置</code>（含 千问API配置说明.md 与生效 .env）</li>
+    <li><code>03_本地知识库</code>（企业概况 / 文化 / 业务 / 组织架构 / 管理制度等 9 份）</li>
+    <li><code>04_文件处理约束库</code>（来源优先级 / 招标投标 / 合同 / 计划 / 会议 / 财务 / 干系人 / 任务记忆 8 份约束）</li>
+    <li><code>05_当前任务记忆体</code>（memory_schema.json + 任务记忆 JSON）</li>
+    <li><code>06_项目输入资料包</code>（招标 / 投标 / 合同 / 计划 / 团队清单 / 干系人清单 / 会议记录 / 财务 / 问题风险 9 份样本）</li>
+  </ul>
+  <h3>6.2 数据实体</h3>
+  <p>见《技术架构.md》第 5 节（12 张表）。</p>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>业务规则与约束</h2>
+
+  <h3>7.1 输出纪律（四道门）</h3>
+  <ol>
+    <li><strong>事实门</strong>：结论基于已确认事实 / 证据，标注来源，区分「事实 / 推断 / 待确认」。</li>
+    <li><strong>结构门</strong>：结构完整、条理清晰，遵循约束库格式要求。</li>
+    <li><strong>可用性门</strong>：输出可直接用于决策与执行。</li>
+    <li><strong>风险门</strong>：不越权、不替授权审批，财务 / 合同 / 人事结论标记「需人工复核」。</li>
+  </ol>
+
+  <h3>7.2 授权-停下</h3>
+  <p>遇到以下任一情况必须主动停下并说明，绝不编造：缺关键材料；结论不可验证；权限不足；事项未确认。</p>
+
+  <h3>7.3 输出要求</h3>
+  <ul>
+    <li>每个关键结论标注来源，格式 <code>[来源: 文件名/章节]</code>。</li>
+    <li>财务金额保留原始口径（含税 / 不含税、当期 / 累计）。</li>
+    <li>人名保留原文，疑似错字不得擅自合并。</li>
+    <li>不得生成不存在的人员、联系方式、金额、日期、审批或签章。</li>
+  </ul>
+
+  <h3>7.4 事实状态判定</h3>
+  <ul>
+    <li>文件明确写明的 → <code>confirmed</code>（已确认）。</li>
+    <li>合理推测 → <code>provisional</code>（待核实）。</li>
+    <li>无法确定 → <code>needs_confirmation</code>（待确认）。</li>
+  </ul>
+
+  <h3>7.5 指令三层分层治理</h3>
+  <ol>
+    <li><strong>L1 系统指令</strong>（build_system_instruction()）：身份、原则、权限/风险边界、四道门、授权-停下、输出要求、企业知识库、约束库。长期不变，进入 system role。</li>
+    <li><strong>L2 工作流指令</strong>（build_workflow_instruction(task_type)）：task_type ∈ {analyze, answer, docgen}，各含步骤、校验点、输出模板。</li>
+    <li><strong>L3 任务指令</strong>：本次任务目标、材料、对象、时间要求，动态拼入 user message 头部。</li>
+  </ol>
+
+  <h3>7.6 检索与上下文边界</h3>
+  <p><strong>检索召回策略</strong>（零新增依赖，关键词打分召回）：</p>
+  <ul>
+    <li>提取问题关键词：正则提取长度 ≥2 的汉字片段 + 英文单词，去重。</li>
+    <li>对每条候选按字段拼接做关键词重叠打分（fact=field+value+category；action=action+owner；finance=item+category；stakeholder=name+organization+role；conflict=description）。</li>
+    <li>score&gt;0 按分数降序取 Top-K：facts≤20、actions≤10、finance≤10、stakeholders≤8、conflicts≤12。</li>
+    <li>召回为空则不注入项目事实，并说明「未检索到与问题直接相关的事实」。</li>
+  </ul>
+  <p><strong>上下文边界三分</strong>：</p>
+  <ol>
+    <li><strong>通用规则上下文</strong>：企业知识库 + 约束库 → system role（L1 承载）。</li>
+    <li><strong>项目事实上下文</strong>：召回条目 → user message（L3 承载）。</li>
+    <li><strong>当前任务上下文</strong>：本次问题 + 工作记忆历史 → user message（L3 承载）。</li>
+  </ol>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>后续迭代约定</h2>
+  <blockquote><p>以下为项目维护的固定工作流，团队成员（含 Agent 角色）须遵守。</p></blockquote>
+  <ol>
+    <li><strong>先文档后代码</strong>：任何功能变更，先更新本《项目需求说明书》，再更新代码。</li>
+    <li><strong>代码交给 coder</strong>：代码层面的改动由 coder 角色负责实现，不越过该角色直接改代码。</li>
+    <li><strong>资产同仓</strong>：技术架构、需求说明书与代码同仓维护，保持同步。</li>
+    <li><strong>双轨同步</strong>：本 .md 是唯一编辑入口，修改后须重新生成对应 .html 交付物，保证「源稿」与「交付物」一致。</li>
+  </ol>
+</section>
+
+<footer>
+  项目管理智能助手 · 项目需求说明书（课程1）v1.0.0 · 本文档为 .html 交付物，源稿见 项目需求说明书-课程1.md（唯一编辑入口）
+</footer>
+
+</div>
+</body>
+</html>

@@ -138,6 +138,82 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     sources    TEXT DEFAULT '',
     created_at TEXT DEFAULT ''
 );
+
+CREATE TABLE IF NOT EXISTS data_sources (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id  INTEGER NOT NULL,
+    category    TEXT DEFAULT '',
+    folder_path TEXT DEFAULT '',
+    file_name   TEXT DEFAULT '',
+    data_date   TEXT DEFAULT '',
+    status      TEXT DEFAULT 'loaded',
+    revision    INTEGER DEFAULT 1,
+    loaded_at   TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS clean_logs (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id     INTEGER NOT NULL,
+    snapshot_id    INTEGER DEFAULT 0,
+    table_name     TEXT DEFAULT '',
+    row_key        TEXT DEFAULT '',
+    field          TEXT DEFAULT '',
+    original_value TEXT DEFAULT '',
+    standard_value TEXT DEFAULT '',
+    rule           TEXT DEFAULT '',
+    source_file    TEXT DEFAULT '',
+    status         TEXT DEFAULT 'auto',
+    created_at     TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS snapshots (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id INTEGER NOT NULL,
+    node_label TEXT DEFAULT '',
+    data_date  TEXT DEFAULT '',
+    revision   INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS metrics (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id  INTEGER NOT NULL,
+    snapshot_id INTEGER DEFAULT 0,
+    code        TEXT DEFAULT '',
+    value       REAL DEFAULT 0,
+    formula     TEXT DEFAULT '',
+    source_ref  TEXT DEFAULT '',
+    computed_at TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS alerts (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id  INTEGER NOT NULL,
+    snapshot_id INTEGER DEFAULT 0,
+    object_id   TEXT DEFAULT '',
+    alert_type  TEXT DEFAULT '',
+    object_name TEXT DEFAULT '',
+    owner       TEXT DEFAULT '',
+    due_date    TEXT DEFAULT '',
+    level       TEXT DEFAULT 'normal',
+    source_file TEXT DEFAULT '',
+    status      TEXT DEFAULT 'open',
+    created_at  TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS advices (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    project_id    INTEGER NOT NULL,
+    snapshot_id   INTEGER DEFAULT 0,
+    anomaly       TEXT DEFAULT '',
+    evidence      TEXT DEFAULT '',
+    action        TEXT DEFAULT '',
+    owner         TEXT DEFAULT '',
+    due_date      TEXT DEFAULT '',
+    confirm_point TEXT DEFAULT '',
+    status        TEXT DEFAULT 'pending_confirm',
+    created_at    TEXT DEFAULT ''
+);
 """
 
 _lock = threading.Lock()

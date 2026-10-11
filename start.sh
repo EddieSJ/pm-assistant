@@ -4,7 +4,7 @@ set -e
 
 # 定位脚本目录（代码目录）并计算课程资料根目录
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-export PM_ASSISTANT_BASE_DIR="$SCRIPT_DIR/../课时1课程资料"
+export PM_ASSISTANT_BASE_DIR="$SCRIPT_DIR/../01_课程资料"
 
 cd "$SCRIPT_DIR"
 

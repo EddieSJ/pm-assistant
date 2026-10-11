@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 import config
-from routers import analysis, chat, docs, projects
+import datasmart
+from routers import analysis, chat, datasmart as datasmart_router, docs, projects
 
 app = FastAPI(title="项目管理智能助手", version="0.1.0")
 
@@ -21,6 +22,15 @@ app.include_router(projects.router)
 app.include_router(analysis.router)
 app.include_router(chat.router)
 app.include_router(docs.router)
+app.include_router(datasmart_router.router)
+
+
+@app.on_event("startup")
+def _startup():
+    try:
+        datasmart.start_watches()
+    except Exception:
+        pass
 
 
 @app.get("/api/health")

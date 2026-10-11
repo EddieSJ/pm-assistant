@@ -3,3 +3,5 @@
 /workspace.xml
 # 基于编辑器的 HTTP 客户端请求
 /httpRequests/
+# VCS 映射（本地 IDE 配置，不入仓）
+/vcs.xml
