@@ -33,6 +33,13 @@ def _get(key: str, default: str = "") -> str:
     return os.environ.get(key, default).strip()
 
 
+def _get_int(key: str, default: int) -> int:
+    try:
+        return int(os.environ.get(key, "").strip() or default)
+    except (TypeError, ValueError):
+        return default
+
+
 def _resolve(rel_path: str) -> Path:
     p = Path(rel_path)
     return p if p.is_absolute() else (BASE_DIR / p).resolve()
@@ -93,6 +100,19 @@ class Config:
     # 数据库：优先沿用已有库文件（保留历史数据），否则用数据目录
     _legacy_db = BACKEND_DIR / "data" / "pm_assistant.db"
     db_path = _legacy_db if _legacy_db.exists() else (data_dir / "pm_assistant.db")
+
+    # ---- 数据库后端 ----
+    # sqlite：本地开发默认，零外部依赖，数据落在本地文件；
+    # mysql ：云托管/生产，数据落在 CloudBase MySQL —— 容器重建不会丢数据。
+    # 选择规则：DB_BACKEND 显式指定优先（sqlite | mysql）；未指定时，配置了 MYSQL_HOST 就启用 mysql。
+    db_backend = _get("DB_BACKEND").lower()
+    mysql_host = _get("MYSQL_HOST")
+    mysql_port = _get_int("MYSQL_PORT", 3306)
+    mysql_user = _get("MYSQL_USER", "root")
+    mysql_password = _get("MYSQL_PASSWORD")
+    mysql_database = _get("MYSQL_DATABASE", "pm_assistant")
+    mysql_charset = _get("MYSQL_CHARSET", "utf8mb4")
+    use_mysql = (db_backend == "mysql") or (not db_backend and bool(mysql_host))
 
 
 def ensure_dirs() -> None:

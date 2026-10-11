@@ -1,9 +1,13 @@
 #!/bin/bash
-# 云托管部署脚本：把后端（FastAPI）+ 课程资料 + 模拟数据包打成云托管构建上下文并部署。
+# 云托管部署脚本（本地手动兜底）。
+#
+# 构建上下文 = **仓库根目录**，Dockerfile = 仓库根 `Dockerfile`。
+# 正常路径是 GitHub Actions：.github/workflows/deploy-backend.yml
+# 本脚本用于 CI 不可用时的本地应急部署。
 #
 # 用法：
-#   ./build.sh              # 仅生成构建上下文 deploy/{backend,kb,dataset}
-#   ./build.sh --deploy     # 生成上下文后直接部署到云托管
+#   ./build.sh              # 从仓库根构建并部署到云托管
+#   ./build.sh --env-only   # 只把工作区 .env 的 LLM 配置注入服务环境变量（不重新构建镜像）
 #
 # 环境变量：
 #   TCB_ENV_ID   目标环境 ID（默认 pm-assistant-d2g7eu0dk3a821546）
@@ -12,69 +16,42 @@ set -euo pipefail
 
 DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$DEPLOY_DIR/.." && pwd)"
-WORKSPACE_DIR="$(cd "$PROJECT_DIR/.." && pwd)"
 
 TCB_ENV_ID="${TCB_ENV_ID:-pm-assistant-d2g7eu0dk3a821546}"
 SERVICE_NAME="${SERVICE_NAME:-pm-assistant-api}"
 PORT="${PORT:-8080}"
 
-echo "[1/3] 清理并暂存 backend ..."
-# 分开清理：一次性批量删除会触发沙箱的批量删除保护
-rm -rf "$DEPLOY_DIR/backend" 2>/dev/null || true
-rm -rf "$DEPLOY_DIR/kb" 2>/dev/null || true
-rm -rf "$DEPLOY_DIR/dataset" 2>/dev/null || true
-rm -rf "$DEPLOY_DIR/dataset3" 2>/dev/null || true
-mkdir -p "$DEPLOY_DIR/backend"
-( cd "$PROJECT_DIR/backend" && tar cf - \
-    --exclude='.venv' --exclude='__pycache__' --exclude='.idea' \
-    --exclude='data' --exclude='*.pyc' --exclude='.DS_Store' . ) \
-  | ( cd "$DEPLOY_DIR/backend" && tar xf - )
-
-echo "[2/3] 暂存课程资料（知识库/约束库/任务记忆体/输入包）与模拟数据包 ..."
-mkdir -p "$DEPLOY_DIR/kb"
-( cd "$WORKSPACE_DIR/01_课程资料" && tar cf - \
-    --exclude='.DS_Store' --exclude='*.env' --exclude='results' --exclude='logs' . ) \
-  | ( cd "$DEPLOY_DIR/kb" && tar xf - )
-mkdir -p "$DEPLOY_DIR/dataset"
-( cd "$WORKSPACE_DIR/02_模拟数据包" && tar cf - --exclude='.DS_Store' . ) \
-  | ( cd "$DEPLOY_DIR/dataset" && tar xf - )
-# 课程3 计划与资源调度的计划材料包（A/B/C/D 四组）→ /app/dataset3
-mkdir -p "$DEPLOY_DIR/dataset3"
-( cd "$WORKSPACE_DIR/03_模拟数据包-课程3" && tar cf - --exclude='.DS_Store' . ) \
-  | ( cd "$DEPLOY_DIR/dataset3" && tar xf - )
-
-echo "      上下文大小：$(du -sh "$DEPLOY_DIR" | cut -f1)"
-find "$DEPLOY_DIR" -name '*.env' -print | sed 's/^/       [校验] 发现 .env（应为空）：/'
-
-if [ "${1:-}" != "--deploy" ]; then
-  echo "完成（未部署）。加 --deploy 参数可直接部署。"
-  exit 0
+if [ "${1:-}" = "--env-only" ]; then
+  exec python3 "$DEPLOY_DIR/set-env-params.py"
 fi
 
-echo "[3/3] 部署到云托管：service=$SERVICE_NAME env=$TCB_ENV_ID port=$PORT"
+echo "[1/2] 校验构建依赖 ..."
+for p in Dockerfile backend/requirements.txt assets/kb assets/dataset assets/plan-dataset; do
+  if [ ! -e "$PROJECT_DIR/$p" ]; then
+    echo "      缺少 $p，无法构建" >&2
+    exit 1
+  fi
+done
+echo "      OK（构建上下文：$PROJECT_DIR）"
 
-# 注入 LLM 配置：只取密钥与模型相关项。
-# 注意：绝不注入 AGENT_KNOWLEDGE_DIR / AGENT_DATA_DIR 等本机绝对路径，否则容器内路径会失效。
-ENV_FILE="${ENV_FILE:-$WORKSPACE_DIR/.env}"
-ENV_PARAMS=""
-if [ -f "$ENV_FILE" ]; then
-  set -a
-  # shellcheck disable=SC1090
-  . "$ENV_FILE"
-  set +a
-  ENV_PARAMS="DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-}&QWEN_BASE_URL=${QWEN_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}&QWEN_MODEL=${QWEN_MODEL:-qwen-plus}&AGENT_TEMPERATURE=${AGENT_TEMPERATURE:-0.2}&AGENT_MAX_OUTPUT_TOKENS=${AGENT_MAX_OUTPUT_TOKENS:-12000}&AGENT_PLAN_DATASET=/app/dataset3"
-  echo "      已从 $ENV_FILE 读取 LLM 配置（密钥长度 ${#DASHSCOPE_API_KEY}，不回显明文）"
-else
-  echo "      [警告] 未找到 $ENV_FILE，将不带密钥部署（AI 问答不可用）"
+# 安全校验：构建上下文里不得出现任何 .env
+if find "$PROJECT_DIR/backend" "$PROJECT_DIR/assets" -name '*.env' -print -quit | grep -q .; then
+  echo "      发现 .env，已中止。请先清理后再构建。" >&2
+  find "$PROJECT_DIR/backend" "$PROJECT_DIR/assets" -name '*.env' >&2
+  exit 1
 fi
 
-cd "$DEPLOY_DIR"
-printf 'n\n' | tcb cloudrun deploy \
+echo "[2/2] 部署到云托管：service=$SERVICE_NAME env=$TCB_ENV_ID port=$PORT"
+cd "$PROJECT_DIR"
+# 说明：不传 --envParams（本 CLI 版本未注册该参数，且环境变量为全量覆盖语义）。
+#       LLM 相关环境变量请在云托管控制台维护，或用 ./build.sh --env-only 注入。
+tcb cloudrun deploy \
   --env-id "$TCB_ENV_ID" \
   --service-name "$SERVICE_NAME" \
   --port "$PORT" \
   --open-access-types PUBLIC \
-  --source "$DEPLOY_DIR" \
-  --envParams "$ENV_PARAMS" \
+  --source "$PROJECT_DIR" \
   --force \
   --wait
+
+echo "完成。若 AI 问答不可用，执行 ./build.sh --env-only 重新注入 LLM 环境变量。"

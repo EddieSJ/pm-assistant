@@ -1,12 +1,20 @@
-"""数据库层：SQLite 建表与连接管理。
+"""数据库层：建表、连接与查询（同时支持 SQLite 与 MySQL）。
 
 贴合 05_当前任务记忆体/memory_schema.json 的结构，
 并承载 项目/来源/事实/冲突/行动/干系人/财务/三层记忆/文档/聊天 数据。
+
+后端选择见 config.py：
+  - sqlite：本地开发默认，数据落在 backend/data/pm_assistant.db；
+  - mysql ：云托管/生产，数据落在 CloudBase MySQL —— 容器重建不丢数据。
+
+下面的 _SCHEMA 以 SQLite 方言书写，MySQL 模式下由 _mysql_ddl() 自动改写。
+上层代码统一使用 query() / execute()，SQL 一律用 `?` 占位符，无需关心方言。
 """
+import re
 import sqlite3
 import threading
+import time
 from datetime import datetime
-from pathlib import Path
 
 from config import Config
 
@@ -493,32 +501,181 @@ CREATE TABLE IF NOT EXISTS plan_advices (
 
 _lock = threading.Lock()
 
+# ---------------------------------------------------------------------------
+# 方言层：上层只写一种 SQL（`?` 占位符 + SQLite 建表语句），这里负责差异。
+# ---------------------------------------------------------------------------
+_IS_MYSQL = Config.use_mysql
 
-def _connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(Config.db_path, check_same_thread=False)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+# MySQL 只有在 8.0.13+ 才允许 TEXT 列带（表达式）默认值
+_MYSQL_TEXT_DEFAULT_MIN_VERSION = (8, 0, 13)
+# 建表重试：容器启动时 MySQL 可能尚未就绪
+_CONNECT_RETRY = 8
+_CONNECT_RETRY_INTERVAL = 3.0
+_TEXT_DEFAULT_AS_EXPR = True
+
+# SQLite 方言 → MySQL 方言的改写规则
+_RE_CREATE_TABLE = re.compile(
+    r"^(CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?)([A-Za-z_][A-Za-z0-9_]*)",
+    re.IGNORECASE,
+)
+_RE_COL_DEF = re.compile(
+    r"^(?P<indent>\s+)(?P<name>[A-Za-z_][A-Za-z0-9_]*)"
+    r"(?=\s+(?:TEXT|VARCHAR|INT|INTEGER|BIGINT|REAL|DOUBLE)\b)"
+)
+_RE_PK_AUTOINC = re.compile(r"INTEGER\s+PRIMARY\s+KEY\s+AUTOINCREMENT", re.IGNORECASE)
+_RE_REAL = re.compile(r"\bREAL\b", re.IGNORECASE)
+_RE_INTEGER = re.compile(r"\bINTEGER\b", re.IGNORECASE)
+_RE_TEXT_DEFAULT = re.compile(r"\bTEXT(\s+)DEFAULT(\s+)'([^']*)'", re.IGNORECASE)
+
+
+def _mysql_ddl(sqlite_ddl: str, text_default_as_expr: bool) -> str:
+    """把 SQLite 方言的 DDL 改写为 MySQL 方言。
+
+    - 表名/列名统一加反引号，规避 MySQL 保留字
+      （如 memories_longterm.key、plan_versions.condition）；
+    - INTEGER PRIMARY KEY AUTOINCREMENT → BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY；
+    - REAL → DOUBLE、INTEGER → INT；
+    - TEXT DEFAULT 'x'：MySQL 8.0.13+ 仅接受表达式默认值 → TEXT DEFAULT ('x')；
+      更低版本不支持 TEXT 默认值，退回 VARCHAR(1024) DEFAULT 'x'。
+    """
+    lines = []
+    for line in sqlite_ddl.splitlines():
+        m = _RE_COL_DEF.match(line)
+        if m:
+            line = f"{m.group('indent')}`{m.group('name')}`" + line[m.end():]
+        lines.append(_RE_CREATE_TABLE.sub(lambda mm: f"{mm.group(1)}`{mm.group(2)}`", line))
+    ddl = "\n".join(lines)
+    ddl = _RE_PK_AUTOINC.sub("BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY", ddl)
+    ddl = _RE_REAL.sub("DOUBLE", ddl)
+    ddl = _RE_INTEGER.sub("INT", ddl)
+    if text_default_as_expr:
+        return _RE_TEXT_DEFAULT.sub(r"TEXT\1DEFAULT\2('\3')", ddl)
+    return _RE_TEXT_DEFAULT.sub(r"VARCHAR(1024)\1DEFAULT\2'\3'", ddl)
+
+
+def _split_statements(script: str) -> list[str]:
+    return [s.strip() for s in script.split(";") if s.strip()]
+
+
+if _IS_MYSQL:
+    import pymysql
+    from pymysql.cursors import DictCursor
+
+    def _connect():
+        return pymysql.connect(
+            host=Config.mysql_host,
+            port=Config.mysql_port,
+            user=Config.mysql_user,
+            password=Config.mysql_password,
+            database=Config.mysql_database,
+            charset=Config.mysql_charset,
+            cursorclass=DictCursor,
+            autocommit=True,
+            connect_timeout=15,
+            read_timeout=60,
+            write_timeout=60,
+        )
+
+    def _to_dialect(sql: str, has_params: bool) -> str:
+        """`?` → `%s`。有参数时 pymysql 会做 %-格式化，故需转义字面量 %。"""
+        if has_params:
+            sql = sql.replace("%", "%%")
+        return sql.replace("?", "%s")
+
+    def _do_execute(conn, sql: str, params: tuple = ()):
+        cur = conn.cursor()
+        cur.execute(_to_dialect(sql, bool(params)), params if params else None)
+        return cur
+
+    def _columns_of(conn, table: str) -> list[str]:
+        cur = conn.cursor()
+        try:
+            cur.execute("SHOW COLUMNS FROM `%s`" % table)
+            return [r["Field"] for r in cur.fetchall()]
+        finally:
+            cur.close()
+
+    def _exec_ddl(conn, sqlite_ddl: str) -> None:
+        cur = conn.cursor()
+        try:
+            cur.execute(_mysql_ddl(sqlite_ddl, _TEXT_DEFAULT_AS_EXPR))
+        finally:
+            cur.close()
+
+    def _server_supports_text_default(conn) -> bool:
+        cur = conn.cursor()
+        try:
+            cur.execute("SELECT VERSION()")
+            row = cur.fetchone()
+        finally:
+            cur.close()
+        nums = [int(p) for p in str(list(row.values())[0]).split("-")[0].split(".") if p.isdigit()]
+        return tuple(nums) >= _MYSQL_TEXT_DEFAULT_MIN_VERSION
+
+else:
+
+    def _connect():
+        conn = sqlite3.connect(Config.db_path, check_same_thread=False)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+        return conn
+
+    def _to_dialect(sql: str, has_params: bool) -> str:
+        return sql
+
+    def _do_execute(conn, sql: str, params: tuple = ()):
+        # sqlite3 不接受 None 作为参数容器，无参数时必须省略第二个实参
+        cur = conn.cursor()
+        if params:
+            cur.execute(sql, params)
+        else:
+            cur.execute(sql)
+        return cur
+
+    def _columns_of(conn, table: str) -> list[str]:
+        return [r[1] for r in conn.execute("PRAGMA table_info(%s)" % table).fetchall()]
+
+    def _exec_ddl(conn, sqlite_ddl: str) -> None:
+        conn.execute(sqlite_ddl)
 
 
 def init_db() -> None:
+    """建表 + 轻量迁移。MySQL 模式下带重试，容忍数据库稍后就绪。"""
+    global _TEXT_DEFAULT_AS_EXPR
     with _lock:
-        conn = _connect()
-        try:
-            conn.executescript(_SCHEMA)
-            _migrate(conn)
-            conn.commit()
-        finally:
-            conn.close()
+        for attempt in range(1, _CONNECT_RETRY + 1):
+            try:
+                conn = _connect()
+            except Exception:  # noqa: BLE001
+                if attempt == _CONNECT_RETRY:
+                    raise
+                time.sleep(_CONNECT_RETRY_INTERVAL)
+                continue
+            try:
+                if _IS_MYSQL:
+                    _TEXT_DEFAULT_AS_EXPR = _server_supports_text_default(conn)
+                    cur = conn.cursor()
+                    try:
+                        for stmt in _split_statements(_mysql_ddl(_SCHEMA, _TEXT_DEFAULT_AS_EXPR)):
+                            cur.execute(stmt)
+                    finally:
+                        cur.close()
+                else:
+                    conn.executescript(_SCHEMA)
+                _migrate(conn)
+                if not _IS_MYSQL:
+                    conn.commit()
+                return
+            finally:
+                conn.close()
 
 
 def _migrate(conn) -> None:
     """向后兼容的轻量迁移：为已存在的表补充新字段。"""
-    cols = [r[1] for r in conn.execute("PRAGMA table_info(documents)").fetchall()]
-    if "version" not in cols:
-        conn.execute("ALTER TABLE documents ADD COLUMN version TEXT DEFAULT 'v1.0'")
+    if "version" not in _columns_of(conn, "documents"):
+        _exec_ddl(conn, "ALTER TABLE documents ADD COLUMN version TEXT DEFAULT 'v1.0'")
     # 记忆治理（N-11）：长期记忆新增 状态 / 备注 / 取代关系 / 更新时间
-    lt_cols = [r[1] for r in conn.execute("PRAGMA table_info(memories_longterm)").fetchall()]
+    lt_cols = _columns_of(conn, "memories_longterm")
     for name, ddl in (
         ("status", "ALTER TABLE memories_longterm ADD COLUMN status TEXT DEFAULT 'active'"),
         ("note", "ALTER TABLE memories_longterm ADD COLUMN note TEXT DEFAULT ''"),
@@ -526,7 +683,7 @@ def _migrate(conn) -> None:
         ("updated_at", "ALTER TABLE memories_longterm ADD COLUMN updated_at TEXT DEFAULT ''"),
     ):
         if name not in lt_cols:
-            conn.execute(ddl)
+            _exec_ddl(conn, ddl)
 
 
 def now() -> str:
@@ -534,23 +691,23 @@ def now() -> str:
 
 
 def query(sql: str, params: tuple = ()) -> list[dict]:
-    """读查询，返回 dict 列表。"""
+    """读查询，返回 dict 列表。SQL 一律用 `?` 占位符。"""
     conn = _connect()
     try:
-        cur = conn.execute(sql, params)
-        rows = cur.fetchall()
-        return [dict(r) for r in rows]
+        cur = _do_execute(conn, sql, params)
+        return [dict(r) for r in cur.fetchall()]
     finally:
         conn.close()
 
 
 def execute(sql: str, params: tuple = ()) -> int:
-    """写操作，返回 lastrowid。"""
+    """写操作，返回 lastrowid。SQL 一律用 `?` 占位符。"""
     with _lock:
         conn = _connect()
         try:
-            cur = conn.execute(sql, params)
-            conn.commit()
+            cur = _do_execute(conn, sql, params)
+            if not _IS_MYSQL:
+                conn.commit()
             return cur.lastrowid
         finally:
             conn.close()

@@ -981,7 +981,7 @@ def _derive_version(project_id, version, kind, label, status, basis_event, condi
                     result_summary="", cost_summary="", impact_days=0, cost_value=0, is_formal=0):
     db.execute("DELETE FROM plan_versions WHERE project_id=? AND version=?", (project_id, version))
     db.execute(
-        "INSERT INTO plan_versions (project_id, version, kind, label, status, basis_event, condition,"
+        "INSERT INTO plan_versions (project_id, version, kind, label, status, basis_event, `condition`,"
         " result_summary, cost_summary, schedule_impact_days, cost_impact_value, is_formal, created_at)"
         " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (project_id, version, kind, label, status, basis_event, condition, result_summary,

@@ -1,0 +1,74 @@
+name: Deploy backend to CloudBase Run
+
+# 后端（FastAPI 容器）自动部署。
+# 触发条件：main 分支上 backend/、assets/、Dockerfile 发生变化。
+# 只改 frontend/ 或文档不会触发本工作流。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'assets/**'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+# 部署不可并发：排队执行，避免两次构建互相覆盖版本。
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build image and deploy pm-assistant-api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install CloudBase CLI
+        run: npm install -g @cloudbase/cli@latest
+
+      - name: Login to CloudBase
+        run: |
+          tcb login \
+            --apiKeyId "${{ secrets.TCB_SECRET_ID }}" \
+            --apiKey "${{ secrets.TCB_SECRET_KEY }}"
+
+      # 构建上下文 = 仓库根（与根目录 Dockerfile 对应）。
+      # 故意不传 --envParams：
+      #   1) 本 CLI 版本未注册该参数；
+      #   2) 且环境变量是「全量覆盖」语义，从 CI 注入会抹掉控制台里维护的其余变量。
+      # 环境变量统一在云托管控制台维护；若需脚本注入，用 deploy/set-env-params.py。
+      - name: Deploy service
+        run: |
+          tcb cloudrun deploy \
+            --env-id "${{ secrets.TCB_ENV_ID }}" \
+            --service-name pm-assistant-api \
+            --port 8080 \
+            --open-access-types PUBLIC \
+            --source . \
+            --force \
+            --wait
+
+      # 兜底校验：确认部署没有把服务上已有的环境变量抹掉。
+      - name: Check environment variables survived
+        run: |
+          tcb cloudrun detail \
+            --env-id "${{ secrets.TCB_ENV_ID }}" \
+            --service-name pm-assistant-api \
+            --json \
+          | python3 -c "
+import json, sys
+cfg = json.load(sys.stdin)['data']['ServerConfig']
+keys = sorted(json.loads(cfg.get('EnvParams') or '{}').keys())
+print('EnvParams keys:', keys)
+if 'DASHSCOPE_API_KEY' not in keys:
+    print('::warning::环境变量疑似被清空，请到云托管控制台重新配置，或运行 deploy/set-env-params.py')
+"

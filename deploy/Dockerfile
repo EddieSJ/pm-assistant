@@ -1,3 +1,10 @@
+# 【已弃用 · 请勿新增改动】
+# 规范镜像定义已迁移到 **仓库根目录的 `Dockerfile`**（构建上下文 = 仓库根），
+# 供 GitHub Actions / 云托管 Git 部署使用。
+# 本文件仅保留给「旧版上下文装配流程」使用：它依赖 deploy/{backend,kb,dataset,dataset3}
+# 这些由旧版 build.sh 生成的副本，而新版 build.sh 已改为直接使用仓库根，不再生成它们。
+# 因此本文件随时可能失效，如需清理可直接删除。
+#
 # 项目管理智能助手 —— 后端（FastAPI）镜像
 # 构建上下文：pm-assistant/deploy/
 # 由 deploy/build.sh 生成上下文（backend/ kb/ dataset/），勿直接构建仓库根目录。

@@ -68,7 +68,7 @@ def sync_task_memory_to_file(data: dict) -> None:
 def save_longterm(project_id: int, key: str, value: str, category: str = "",
                   note: str = "") -> int:
     return db.execute(
-        "INSERT INTO memories_longterm (project_id, key, value, category, status, note,"
+        "INSERT INTO memories_longterm (project_id, `key`, value, category, status, note,"
         " created_at, updated_at) VALUES (?,?,?,?,'active',?,?,?)",
         (project_id, key, value, category, note, db.now(), db.now()),
     )
@@ -109,7 +109,7 @@ def update_longterm(memory_id: int, value: str, key: str | None = None,
         raise ValueError("记忆不存在")
     new_key = key if key is not None else old["key"]
     db.execute(
-        "UPDATE memories_longterm SET key=?, value=?, note=?, updated_at=? WHERE id=?",
+        "UPDATE memories_longterm SET `key`=?, value=?, note=?, updated_at=? WHERE id=?",
         (new_key, value, note or old.get("note", ""), db.now(), memory_id),
     )
     _audit(old["project_id"], memory_id, "update",
@@ -123,7 +123,7 @@ def correct_longterm(memory_id: int, value: str, reason: str = "") -> dict:
     if not old:
         raise ValueError("记忆不存在")
     new_id = db.execute(
-        "INSERT INTO memories_longterm (project_id, key, value, category, status, note,"
+        "INSERT INTO memories_longterm (project_id, `key`, value, category, status, note,"
         " supersedes, created_at, updated_at) VALUES (?,?,?,?,'active',?,?,?,?)",
         (old["project_id"], old["key"], value, old["category"],
          f"纠错自 #{memory_id}", memory_id, db.now(), db.now()),

@@ -1,0 +1,35 @@
+# 构建上下文瘦身：只保留 backend/ + assets/，其余一律排除。
+# 注意：.dockerignore 只影响 docker build 的上传内容，不影响 git。
+
+# ---- 版本控制与 CI ----
+.git
+.github
+.gitignore
+
+# ---- 与后端镜像无关的目录 ----
+frontend
+docs
+tools
+deploy/backend
+deploy/kb
+deploy/dataset
+deploy/dataset3
+# 注意：不要排除 *.md —— assets/ 下的知识库与约束库大量使用 .md 承载内容。
+
+# ---- 依赖与运行产物 ----
+backend/.venv
+backend/data
+**/__pycache__
+**/*.pyc
+
+# ---- 敏感信息：绝不进镜像 ----
+.env
+**/.env
+*.env
+**/*.env
+!.env.example
+
+# ---- 系统 / 编辑器 ----
+.DS_Store
+*.bak
+*.log

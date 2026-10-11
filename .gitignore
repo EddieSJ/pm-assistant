@@ -12,6 +12,10 @@ frontend/dist/
 .env
 *.env
 !.env.example
+# assets/ 下的知识库与输入包允许入仓，但其中任何 .env 一律排除
+# 已实测：assets/kb/02_千问API与env配置/.env 命中本文件第 13 行 `*.env` 规则
+assets/**/.env
+assets/**/*.env
 
 # ---- 本地数据（SQLite 数据库，含用户数据）----
 backend/data/
@@ -24,8 +28,10 @@ backend/data/
 # ---- 运行时输出 ----
 results/
 logs/
+assets/**/results/
+assets/**/logs/
 
-# ---- 云托管构建上下文（由 deploy/build.sh 生成，勿入仓）----
+# ---- 旧版云托管构建上下文（deploy/build.sh 已改为直接使用仓库根，以下为历史遗留保险）----
 deploy/backend/
 deploy/kb/
 deploy/dataset/

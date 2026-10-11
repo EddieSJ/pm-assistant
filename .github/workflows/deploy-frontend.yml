@@ -1,0 +1,67 @@
+name: Deploy frontend to CloudBase Hosting
+
+# 前端（Vite + React 静态产物）自动部署。
+# 触发条件：main 分支上 frontend/ 发生变化。
+#
+# 为什么前端不用云托管的 Git Webhook？
+#   静态网站托管只是 CDN + 对象存储，没有内置 Git 集成，也不会执行构建命令，
+#   因此必须由 CI 完成 npm run build 后再上传产物。
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+# 前端可以取消旧任务：只需保证最新一次构建上线。
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and upload dist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        env:
+          # 构建期注入后端地址；在仓库 Settings → Variables 中维护。
+          VITE_API_BASE: ${{ vars.API_BASE }}
+        run: npm run build
+
+      - name: Install CloudBase CLI
+        run: npm install -g @cloudbase/cli@latest
+
+      - name: Login to CloudBase
+        run: |
+          tcb login \
+            --apiKeyId "${{ secrets.TCB_SECRET_ID }}" \
+            --apiKey "${{ secrets.TCB_SECRET_KEY }}"
+
+      # ⚠️ 故意不使用 --prune：
+      #   静态托管的根目录下还放着不属于前端构建产物的文件
+      #   （cloud-admin/index.html 以及身份认证内置页 __auth/**），
+      #   --prune 会把它们当作「多余文件」删除。
+      #   代价是 Vite 带 hash 的旧 assets/*.js 会持续堆积，
+      #   需要清理时手动执行：tcb hosting delete <path> --env-id <envId> --yes
+      - name: Upload to static hosting
+        run: |
+          tcb hosting deploy ./frontend/dist \
+            --env-id "${{ secrets.TCB_ENV_ID }}" \
+            --verify
