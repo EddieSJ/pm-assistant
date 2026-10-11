@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目管理智能助手 — 项目需求说明书（课程3）</title>
+<style>
+:root{
+  --bg:#f6f8fb; --card:#ffffff; --ink:#182235; --muted:#5b6779;
+  --border:#e3e8f0; --accent:#0f7b6c; --accent-soft:#e6f5f1;
+  --done:#16a34a; --done-soft:#e9f9ef; --todo:#8a94a6; --todo-soft:#f1f3f7;
+  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.75;font-size:15px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:980px;margin:0 auto;padding:0 24px 80px}
+header{padding:48px 0 28px;border-bottom:1px solid var(--border);margin-bottom:36px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.4px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(15,123,108,.5);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(15,123,108,.5)}70%{box-shadow:0 0 0 8px rgba(15,123,108,0)}100%{box-shadow:0 0 0 0 rgba(15,123,108,0)}}
+h1{font-size:30px;margin:10px 0 12px;line-height:1.3}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.badge{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid #c6e8e0}
+.badge.v{background:#fff;color:var(--muted);border-color:var(--border)}
+.lead{margin-top:16px;color:var(--muted);font-size:14.5px;max-width:860px}
+nav.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-bottom:32px}
+nav.toc h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 10px}
+nav.toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px}
+nav.toc li{margin:4px 0;font-size:13.5px;break-inside:avoid}
+section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin-bottom:26px}
+h2{font-size:21px;margin:0 0 16px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+h2 .n{color:var(--accent);font-family:var(--mono);font-size:15px;background:var(--accent-soft);border-radius:6px;padding:2px 9px}
+h3{font-size:16px;margin:24px 0 10px}
+p{margin:8px 0}
+ul,ol{margin:8px 0;padding-left:24px}
+li{margin:4px 0}
+table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px}
+th{background:var(--accent-soft);color:var(--ink);text-align:left;font-weight:600;padding:9px 12px;border:1px solid var(--border)}
+td{padding:8px 12px;border:1px solid var(--border);vertical-align:top}
+tr:nth-child(even) td{background:#fafbfd}
+td code{background:#f1f3f7;padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:12.5px}
+.s-done{display:inline-block;font-size:11.5px;font-weight:600;color:var(--done);background:var(--done-soft);border:1px solid #bfe8cf;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.s-todo{display:inline-block;font-size:11.5px;font-weight:600;color:var(--todo);background:var(--todo-soft);border:1px solid #dde2ea;padding:1px 8px;border-radius:999px;white-space:nowrap}
+code{font-family:var(--mono);font-size:13px}
+blockquote{border-left:3px solid var(--accent);background:var(--accent-soft);margin:14px 0;padding:10px 16px;border-radius:0 8px 8px 0;color:#2c4f49}
+blockquote p{margin:4px 0}
+footer{margin-top:20px;color:var(--muted);font-size:12.5px;text-align:center;padding:20px}
+@media(max-width:720px){nav.toc ol{columns:1}section{padding:20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker"><span class="dot"></span>项目需求说明书 · PRD</div>
+  <h1>项目管理智能助手 — 项目需求说明书<br><span style="font-size:22px;color:var(--accent)">课程3：计划与资源智能调度</span></h1>
+  <div class="meta">
+    <span class="badge v">版本 v1.1.0</span>    <span class="badge v">更新 2026-10-11</span>    <span class="badge">28 项规划功能（F-63~F-90），全部状态为「✅ 已实现」（后端 <code>backend/planning.py</code> + 前端 <code>frontend/src/components/Planning.jsx</code>）</span>    <span class="badge v">对应课件：课程3PPT.pdf</span>
+  </div>
+  <p class="lead">课程3 主题——计划与资源智能调度。在课程1「文档事实」与课程2「状态判断」之上，把监控发现的偏差与风险转成未来执行方案：识别文件效力 → 建立统一 WBS → 采集五类约束 → 确定性排程 → 多视图联动呈现 → 资源负荷与冲突 → 关键路径 → 计划版本派生与方案比较 → 人工确认与责任动作。数字由规则计算，建议由 Agent 解释，责任由人承担。</p>
+</header>
+
+  <blockquote>
+    <p>课程主题：计划与资源智能调度（让监控结果进入可执行、可调整、可追溯的未来计划） ｜ 对应课件：<code>课程3PPT.pdf</code></p>
+    <p>配套交付物：<code>项目需求说明书-课程3.html</code>（供其他 AI 阅读；本 .md 为唯一编辑入口，改后须重新生成 .html）</p>
+    <p>前置：课程1 已实现 40 项功能（F-01~F-40），课程2 已实现 22 项功能（F-41~F-62）；本文档功能编号延续，从 F-63 起；非功能编号承接课程2 的 N-15，从 N-16 起。</p>
+    <p>命名说明：本课件内页页脚标注为「课程4」（其第 2 页以 课程1 / 课程2 / 课程4 并列呈现能力链），项目内统一按「课程3」归档，文件名、功能编号与术语均按「课程3」执行；若后续补充独立的课程3 课件，本节命名与范围以实际课件为准。</p>
+    <p>变更记录：</p>
+    <ul><li>v1.1.0（2026-10-11）：按本文档实现课程3 全部功能。新增 <code>03_模拟数据包-课程3/</code>（A/B/C/D 四组计划材料，13 个 CSV + README）；新增数据层 14 张计划实体表；新增后端确定性排程引擎 <code>backend/planning.py</code> 与路由 <code>backend/routers/planning.py</code>（24 个端点）；新增前端板块 <code>frontend/src/components/Planning.jsx</code>（十类视图）；F-63~F-90 状态由「待实现」更新为「已实现」。已复现课件锚点：关键路径 10 项、A423 = 2027-04-29、A427 = 2027-05-04、P004 于 2027-04-06 利用率 131.2%。</li><li>v1.0.0（2026-10-11）：初稿。依据《课程3PPT.pdf》30 页内容梳理课程3「计划与资源智能调度」需求：八项能力沿同一计划因果链组织为 F-63~F-90（28 项，全部待实现）；术语新增文件效力、稳定 ID、五类约束、确定性排程、关键路径、总时差、计划版本与恢复点、事件效力判定等；数据需求新增 A/B/C/D 四类计划材料与计划实体 ID 体系；业务规则新增 7.1~7.12；非功能新增 N-16~N-21；新增「10. 课程要点覆盖对照」。</li></ul>
+  </blockquote>
+
+<nav class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#s1">1. 引言</a></li>
+    <li><a href="#s2">2. 项目概述</a></li>
+    <li><a href="#s3">3. 功能需求</a></li>
+    <li><a href="#s4">4. 功能清单（总表）</a></li>
+    <li><a href="#s5">5. 非功能需求</a></li>
+    <li><a href="#s6">6. 数据需求</a></li>
+    <li><a href="#s7">7. 业务规则与约束</a></li>
+    <li><a href="#s8">8. 后续迭代约定</a></li>
+    <li><a href="#s9">9. 课程3 修改计划</a></li>
+    <li><a href="#s10">10. 课程要点覆盖对照（对照 课程3PPT.pdf）</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>引言</h2>
+  <h3>1.1 编写目的</h3>
+  <p>本文档定义「项目管理智能助手」平台在<strong>课程3「计划与资源智能调度」</strong>阶段的功能需求、业务规则与约束，作为开发、验收与后续迭代的基准。课程3 的核心目标：延续同一个项目（CY-DCM-2026-01）与同一个私人 Agent 的能力生长路径，在课程1「文档事实」与课程2「状态判断」之上补齐最后一环——<strong>把偏差与风险转成未来行动</strong>，构建一条可检查、可调整、可追溯的计划闭环：判断文件效力 → 建立统一 WBS 与稳定 ID → 归集五类约束 → 确定性排程形成计划 V1 → 多视图联动呈现 → 资源负荷与冲突处理 → 关键路径与冲突预警 → 追加事件派生 V2 与备选方案 → 人工确认责任动作并保存证据。</p>
+  <p>一句话概括三代能力的分工：<strong>事实是底座，状态形成判断，计划才把判断转成未来行动。</strong></p>
+  <h3>1.2 项目范围</h3>
+  <ul><li><strong>在范围（课程3 规划，全部待实现）</strong>：计划输入与文件效力识别、WBS 映射与稳定 ID、依赖与约束确认状态、工作日历与确定性排程、交互式计划界面、资源负荷与分配、关键路径与冲突预警、计划版本与动态调整、方案比较、建议六要素与人工确认关卡、证据与审计轨迹（见第 3 节 F-63~F-90）。</li><li><strong>复用（课程1 / 课程2 已实现）</strong>：课程1 的文档事实底座（合同、计划责任、会议事实、来源与记忆）、项目看板与智能聊天、三层记忆与记忆治理；课程2 的截至 2027-03-31 的状态结论（指标、趋势、预警与决策依据）。以上既有事实底座<strong>直接复用</strong>，课程3 不重复做文档整理与数据接入。</li><li><strong>不在范围</strong>：D01—D04 动态事件文件本期不授权（由教师在 V1 冻结后发放，见 6.1）；多用户权限体系、移动端、向量数据库检索（当前版本不引入）。</li></ul>
+  <h3>1.3 目标用户</h3>
+  <p>项目经理（个人使用），服务于虚构企业「上海澄岳智能装备有限公司」的教学场景。课程3 阶段项目经理需要回答的不再是「项目现在怎样」，而是每天必须面对的执行三问：<strong>4 月 1 日先做什么？谁来做？哪些任务不能同时开始？什么时候能够上线和验收？</strong></p>
+  <h3>1.4 术语定义</h3>
+  <table>
+    <tr><th>术语</th><th>定义</th></tr>
+    <tr><td>计划因果链</td><td>文件效力 → WBS → 约束 → 排程 → 呈现 → 资源 → 关键路径 → 版本与调整 的单一管理链路，八项能力必须沿此链条工作</td></tr>
+    <tr><td>文件效力</td><td>一份材料对「未来执行」的约束强度；效力强（历史/已批准）→ 效力弱（预测/待批准）八类分级（见 6.3）</td></tr>
+    <tr><td>效力四问</td><td>判定一个日期能否进入排程的四个问题：谁发布？何时生效？是否已批准？能否追溯？</td></tr>
+    <tr><td>稳定 ID</td><td>不被重命名、重排或换表破坏的对象标识；活动 activity_id、父任务 task_id、资源 resource_id、里程碑 milestone_id、来源 source_record_id、版本 plan_version、事件 event_id</td></tr>
+    <tr><td>WBS</td><td>Work Breakdown Structure，工作分解结构；父任务 → 活动 → 交付物的层级组织</td></tr>
+    <tr><td>五类约束</td><td>依赖关系、工作日历、资源容量、外部窗口、质量门——共同决定项目活动的最早、最晚与基准日期</td></tr>
+    <tr><td>确定性排程</td><td>由可复核的规则引擎计算日期，不含主观判断；输入为计划起点、工作日历、确认后工期、依赖类型、资源日期区间容量、质量门</td></tr>
+    <tr><td>关键路径</td><td>控制交付日期的活动链，可计算、可复核；判据包括前置关系连续、总时差接近 0、质量门不可压缩、受窗口与签署限制</td></tr>
+    <tr><td>总时差（Float）</td><td>活动在不影响总工期的前提下可延迟的时间；关键路径活动总时差接近 0</td></tr>
+    <tr><td>资源可用性</td><td>日期区间容量 − 其他已承诺工作；「资源表里有这个人」不等于「这一天可被项目使用」</td></tr>
+    <tr><td>计划版本</td><td>V1（冻结基准）/ V2（追加事件后派生）；每个版本保留输入快照、计算参数、日期结果、资源分配与恢复点</td></tr>
+    <tr><td>备选方案（情景）</td><td>S1 / S2 / S3 等并列情景，各自记录条件、结果与代价；情景不等于已批准计划</td></tr>
+    <tr><td>事件效力判定</td><td>对新增事件判定为立即生效 / 条件生效 / 仅情景模拟 / 仅形成比对任务，再决定重算、模拟、记录或等待确认</td></tr>
+    <tr><td>责任动作</td><td>资源批准、正式变更、生产切换、UAT 签署、最终验收五类必须由人确认的动作</td></tr>
+    <tr><td>质量门</td><td>不可作为进度优化代价的质量与批准边界（P1/P2 缺陷 = 0、总体通过率 ≥ 95%、数据准确率 ≥ 99.5%、Go/No-Go 与 UAT 签署由责任人人工完成）</td></tr>
+  </table>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>项目概述</h2>
+  <h3>2.1 背景</h3>
+  <p>课程2 已解决「项目现在怎样」，但监控能证明问题存在，<strong>却不能自动给出可执行安排</strong>。课程2 状态卡片显示：状态日 2027-03-31、计划进度 93.8%、实际进度 82.5%、SPI 0.880、CPI 0.934，关键剩余任务 T10 集成测试 62%、T11 用户验收测试 38%、T13 上线准备 12%。这些结论回答了「发生了什么」，却没有回答「4 月 1 日先做什么、谁来做、哪些任务不能同时开始、什么时候能上线和验收」。</p>
+  <p>更深层的问题在于：<strong>未来计划藏在多份效力不同的文件里</strong>。项目总控进度计划（控制基线、当前预测）、各专业剩余工作反馈（本地工作项、工期估算、依赖与候选资源）、资源池及可用日历（人员能力、日期区间、每日容量与既有承诺）、关键测试资源借调申请（待批准情景）、供应商进场计划（外部承诺与前置条件）、生产环境与变更窗口通知（材料截止、可用窗口、运维限制）、协调会纪要（已决定事项、行动项、讨论项与待决事项）——这些材料发布主体不同、批准状态不同、可追溯程度不同。若不加区分地排进甘特图，只会得到<strong>精确的假计划</strong>。</p>
+  <p>课程3 的输入不是再做一次七类数据分析，而是判断<strong>哪些企业文件能够约束未来执行</strong>。</p>
+  <h3>2.2 建设目标</h3>
+  <p>延续同一个 Agent，把课程2 发现的偏差与风险变成未来执行方案：</p>
+  <ol><li><strong>可执行</strong>：明确剩余工作、顺序、责任与期限——六个问题落到同一 activity_id 与同一计划版本。</li><li><strong>可调整</strong>：新事件进入后快速形成版本与备选方案，派生而非覆盖。</li><li><strong>可追溯</strong>：日期、资源和建议能够回到来源与规则。</li><li><strong>可负责</strong>：责任动作停在人工确认前，Agent 不执行责任动作。</li><li><strong>不越界</strong>：任何进度优化都不得偷换质量门与批准边界。</li></ol>
+  <h3>2.3 技术栈（概要）</h3>
+  <p>沿用课程1 / 课程2 技术栈（React 18 + Vite 5 ｜ FastAPI ｜ SQLite ｜ 千问 qwen-plus），新增「计划与资源智能调度」板块：确定性排程引擎（依赖 + 日历 + 工期 + 资源容量 + 关键路径计算）、计划版本与情景管理、资源负荷计算、冲突预警、证据索引与恢复点。数据层需新增计划材料、活动与 WBS、依赖、资源与日历、计划版本、事件、冲突预警、证据等实体（详见第 6 节与第 9 节）。详见《技术架构.md》。</p>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>功能需求</h2>
+  <blockquote>
+    <p>课程3 共 28 项功能，编号 F-63 ~ F-90（延续课程1、课程2 全局编号）。功能按 <strong>PPT 第 14 页的八项能力</strong>沿同一条计划因果链组织，另设「证据、审计与自动停止」治理小节；功能必须按管理因果链组织，不能变成八个互不相干的按钮。经核对现有代码（课程1 / 课程2 已实现范围），本课程 28 项状态均为「✅ 已实现」。</p>
+  </blockquote>
+  <h3>3.1 计划输入与文件效力识别</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-63</td><td>计划材料接入</td><td>只读接入课程3 新增授权材料三个分组：计划基线（A01 项目总控进度计划、A02 各专业剩余工作反馈）、资源与日历（B01 资源池及可用日历、B02 关键测试资源借调申请）、外部条件与协同（C01 供应商进场计划、C02 生产环境与变更窗口通知、C03 协调会纪要）；课程1 / 课程2 既有事实底座直接复用，D01—D04 动态事件文件本期不授权；原始文件只读，追加读取不覆盖</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-64</td><td>文件效力分级</td><td>按效力强弱把日期与材料分为八类：基线日期（已批准的控制参照）、实际日期（已发生的历史事实）、当前预测（按现状推算）、专业估算（团队提交的候选工期）、供应商承诺（附带前置条件）、窗口通知（已发布的可用时间边界）、申请日期（待批准情景，不得视为可用容量）、会议讨论（需逐条区分决定、行动与待决）；效力决定该信息能否进入正式排程</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-65</td><td>效力判定四问</td><td>每条信息必须回答：谁发布的这个日期、何时开始有效、是否已获得正式批准、能否被历史记录追溯；四问不齐的日期不得进入 V1 正式容量与正式排程，先判断「是什么」，再决定「能不能排」</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-66</td><td>输入检查七问</td><td>对每份材料执行七项检查：project_id 是否一致、日期属于基线/预测/估算/承诺哪一类、文件状态是批准/通知/申请/讨论哪一种、稳定 ID 是否存在且唯一、依赖是否完整或仅为自然语言候选、资源容量是否按日期区间有效、来源与定位与确认人能否追溯；输出问题清单、拟处理规则、影响范围与待确认事项。检查不是修饰数据，而是决定每条信息以什么身份进入计划</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.2 WBS 映射与稳定 ID</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-67</td><td>统一 WBS 建立</td><td>把各专业剩余工作反馈归集为统一 WBS：专业本地工作项（DG / DEV / QA / UAT / TRN / OPS / DOC / PM）映射为统一活动编号 activity_id（A401—A427），并归属父任务 task_id（T05—T15）；支持 DG-01 → A401 → T05 的映射追溯示例</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-68</td><td>稳定 ID 联动体系</td><td>以稳定 ID 为锚点联动结构、时间、资源与版本：活动联动资源 resource_id、里程碑 milestone_id（如 MS-A411）、来源 source_record_id、版本 plan_version，使同一对象上的结构、时间、资源、来源和版本可联动查询</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-69</td><td>映射而非覆盖</td><td>映射时保留原始 ID 与描述，不覆盖来源记录；禁止使用姓名、描述或行号作为跨表主键；映射结果需经人工确认后方可进入排程</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.3 依赖、约束与确认状态</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-70</td><td>依赖关系建立</td><td>建立活动间前置与后继关系（默认 Finish-to-Start），标记强制顺序约束，识别「仅为自然语言候选」的依赖并标注待确认；漏掉一条依赖会导致任务被误判为可并行、资源被重复占用、关键路径转移、生产窗口或验收节点错失（见 7.4）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-71</td><td>五类约束归集</td><td>归集共同决定日期的五类约束：依赖关系（决定最早开始时间）、工作日历（决定可用工作时间）、资源容量（决定并行执行能力）、外部窗口（决定可交付时机）、质量门（确保质量合规通过）；任一约束缺失，得到的日期都只是「看起来合理」</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-72</td><td>确认状态标记</td><td>每条约束、假设与待批准项标记确认状态，区分「已确认 / 待确认 / 待批准」；坚持「申请不等于批准」——人员出现在资源主表与借调申请中但审批未完成时，其正式容量仍为 0</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.4 工作日历与确定性排程</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-73</td><td>工作日历</td><td>依据 B01 资源池及可用日历建立工作日、节假日、班次与工作时段，作为工期与日期计算的日历基线</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-74</td><td>确定性排程引擎</td><td>以可复核规则计算计划 V1，输入为六项：计划起点、工作日历、确认后的正常工期、依赖类型（Finish-to-Start）、资源日期区间容量、质量门（不得放松）；输出开始日期、完成日期、总时差、关键路径、里程碑偏差，确定性计算不含主观判断。参考结果：A423 生产切换 2027-04-29、A427 最终验收 2027-05-04</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-75</td><td>排程可复核</td><td>输入快照、计算参数与日期结果全部留痕，任一日期可回到依赖、工期、日历与资源进行复核，规则负责计算，Agent 不参与日期计算</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.5 交互式计划界面</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-76</td><td>多视图联动</td><td>左侧导航新增「计划与资源智能调度」板块（与工作台概览、授权与协作、项目与合同、文档与知识、沟通与反馈、规则与设置、数据与报表并列），提供七类视图：WBS 视图（父任务、活动与交付物）、任务看板（当前状态与阻塞）、甘特视图（日期、依赖、里程碑与时差）、资源负荷（每日容量、需求与冲突）、关键路径（控制交付日期的活动链）、冲突预警（对象、证据、影响与备选处理）、版本比较（V1、V2 与情景差异）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-77</td><td>甘特交互与活动详情</td><td>甘特按周 / 月时间刻度展示活动条与里程碑；点击任一活动显示活动名称、WBS 路径、负责人、计划起止、工期、状态、完成率、优先级、依赖项、里程碑、版本、最后更新；并可继续追溯该活动的来源、规则、资源与确认状态。示例：活动「切换方案确认」（WBS A4 &gt; A41 &gt; A411、负责人王工、计划 2027-04-08 ~ 2027-04-15、工期 6 工作日、完成率 40%、里程碑 MS-A411）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-78</td><td>多视图一致性</td><td>一次活动日期或资源变化必须同步七项：WBS 结构保持一致、甘特日期重新计算、资源负荷同步变化、关键路径重新识别、看板与待办更新、冲突预警重新评估、计划版本留下差异；所有视图共享同一 activity_id、同一规则与同一版本，来源与确认状态仍可追溯</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.6 资源负荷与分配</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-79</td><td>资源可用性计算</td><td>按「可用性 = 日期区间容量 − 其他已承诺工作」逐日计算资源可用容量；名单里有人不等于那一天有容量，不按「姓名是否出现」判断可用性</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-80</td><td>资源冲突识别</td><td>识别同一资源在同一日期的并发需求超容量冲突并量化（示例：P004 关键测试资源于 2027-04-06 可用容量 8h、并发需求 10.5h、利用率 131%，被 A408 / A410 / A411 同时建议使用）；与课程2 的人员利用率指标联动</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-81</td><td>资源分配方案</td><td>给出可接受处理方案：错峰、分配替代资源（P010）、在获批情景中使用待批准资源（P011）、调整里程碑；待批准资源只能进入「批准情景」，不得进入 V1 正式容量</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.7 关键路径与冲突预警</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-82</td><td>关键路径计算与可解释</td><td>计算控制交付日期的活动链（示例 A411 → A412 → A413 → A415 → A416 → A417 → A422 → A423 → A426 → A427），并回答「它为什么关键」：前置关系连续、总时差接近 0、关键测试与 UAT 质量门不可压缩、生产切换与最终验收受窗口与签署限制、资源受限时关键链可能发生局部变化；点击任一关键活动应显示前置、工期、日历、资源、时差、来源与版本</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-83</td><td>冲突预警六要素</td><td>每条冲突预警包含：对象、时间、原因、证据、影响（影响范围与受影响链）、备选处理、责任人与待确认事项。示例 CF-01（P004 资源超载）：对象 P004 / A408 / A410 / A411，时间 2027-04-06，原因 同一资源并发需求超过日期容量，证据 B01 资源日历 + A02 专业反馈 + V1 计算记录，影响 A411 集成测试及后续 UAT、切换、验收链，备选处理 错峰 / 使用 P010 / 获批后使用 P011 / 调整窗口，责任人 项目经理与测试负责人与资源经理</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-84</td><td>预警状态流转</td><td>预警状态流转：未确认 → 处理中 → 已接受 / 已关闭；预警的终点不是颜色，而是可分配、可跟踪、可关闭的处理任务</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.8 计划版本、动态调整与方案比较</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-85</td><td>版本冻结与恢复点</td><td>计划 V1 形成后冻结输入快照、计算参数、日期结果、资源分配与恢复点，作为后续调整比对的基准；V1 冻结前不接收动态事件</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-86</td><td>事件效力判定与追加式调整</td><td>接收 D01—D04 后先判断事件效力（立即生效 / 条件生效 / 仅情景模拟 / 仅形成比对任务），再决定重算、模拟、记录还是等待确认；追加读取不覆盖原文件，派生计划 V2 与 S1 / S2 / S3 备选方案，每个变化保留 event_id、来源、时间、影响对象与确认状态。示例：D01 供应商延期通知（已通知待甲方确认 → 保留 C01、追加 P010 可用性事件与条件）、D02 资源调用通知（已批准 → 立即把 P004 在 4 月 6—7 日容量降为 2 小时/日）、D03 分阶段上线申请（待批准 → 只创建 S3 情景、记录 +4 工作日与 +45,000 元）、D04 调整协调会纪要（已分发无批准决定 → 比较工期成本资源稳定方案、形成待确认事项）</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-87</td><td>方案比较</td><td>对备选方案按条件、结果、代价三维对比，说清「放松了什么、获得了什么、由谁确认」。示例：S1 资源稳定优先（条件 不新增批准、不降低质量门；结果 确定性最早约 5 月 5 日、管理预测约 5 月 7 日；代价 新增成本 0、延期风险持续）；S2 工期优先（条件 P011 获批 4 小时/日 + P010 远程支持确认；结果 向 5 月 4—5 日收敛；代价 P011 约 48 小时 = 6 人日、内部机会成本约 6,600 元）；S3 业务分阶段（条件 CHG-CY-2027-004 正式批准；结果 降低一次切换风险、最终验收仍依赖二阶段与证据；代价 +4 工作日、增量成本 45,000 元）；三类方案均保持质量门不变</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-88</td><td>建议六要素与人工确认关卡</td><td>决策支持建议必须包含六要素：具体对象、证据、责任人、期限、替代方案、待确认事项（示例 P011 有限期借调：对象 P011 测试资源，证据 B02 + B01 + CF-01，责任人 测试与质量部经理与项目交付部负责人，期限 2027-04-07，替代方案 错峰并延后验收，待确认 每日投入上限与有效期与其他项目影响）；Agent 只生成建议草案，资源批准、正式变更、生产切换、UAT 签署、最终验收五类责任动作必须停在人工确认前</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <h3>3.9 证据、审计与自动停止</h3>
+  <table>
+    <tr><th>编号</th><th>功能</th><th>描述</th><th>状态</th></tr>
+    <tr><td>F-89</td><td>证据与审计轨迹</td><td>全程保留原值、标准值、处理规则、来源、计划版本与确认状态，形成可提交的证据索引与恢复点；支持「保存证据与恢复点」作为计划闭环的最后一步</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>F-90</td><td>自动停止</td><td>出现四类情况自动停止并显式提示：来源不足、解析失败、关键假设未确认、责任动作即将发生；停止时说明原因与影响范围，不静默继续、不猜测补齐</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>功能清单（总表）</h2>
+  <table>
+    <tr><th>模块</th><th>功能数</th><th>核心功能</th></tr>
+    <tr><td>计划输入与文件效力识别</td><td>4（F-63~F-66）</td><td>计划材料只读接入、文件效力八级分类、效力判定四问、输入检查七问</td></tr>
+    <tr><td>WBS 映射与稳定 ID</td><td>3（F-67~F-69）</td><td>统一 WBS 与 activity_id、稳定 ID 联动体系、映射而非覆盖</td></tr>
+    <tr><td>依赖、约束与确认状态</td><td>3（F-70~F-72）</td><td>依赖关系建立、五类约束归集、申请不等于批准</td></tr>
+    <tr><td>工作日历与确定性排程</td><td>3（F-73~F-75）</td><td>工作日历、确定性排程引擎、排程可复核</td></tr>
+    <tr><td>交互式计划界面</td><td>3（F-76~F-78）</td><td>七类视图联动、甘特交互与活动详情、多视图一致性</td></tr>
+    <tr><td>资源负荷与分配</td><td>3（F-79~F-81）</td><td>资源可用性计算、资源冲突识别、资源分配方案</td></tr>
+    <tr><td>关键路径与冲突预警</td><td>3（F-82~F-84）</td><td>关键路径可解释、冲突预警六要素、预警状态流转</td></tr>
+    <tr><td>计划版本、动态调整与方案比较</td><td>4（F-85~F-88）</td><td>版本冻结与恢复点、事件效力判定与派生 V2、方案比较、建议六要素与人工确认关卡</td></tr>
+    <tr><td>证据、审计与自动停止</td><td>2（F-89~F-90）</td><td>证据与审计轨迹、四类自动停止</td></tr>
+  </table>
+  <p><strong>课程3 合计：28 项功能，全部为已实现状态（✅ 已实现）（F-63~F-90）。</strong></p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>非功能需求</h2>
+  <table>
+    <tr><th>编号</th><th>类别</th><th>需求</th></tr>
+    <tr><td>N-16</td><td>原始文件只读与追加式更新</td><td>计划材料只读接入；新增事件采用追加读取，不覆盖、不删除原始文件；历史版本始终保留</td></tr>
+    <tr><td>N-17</td><td>计划确定性</td><td>日期由确定性规则计算；Agent 不得编造日期、不得放松规则、不得替人批准；解释与建议必须可回溯到计算依据与来源</td></tr>
+    <tr><td>N-18</td><td>全程留痕与可恢复</td><td>输入快照、计算参数、日期结果、资源分配与确认状态全程留痕，支持恢复到既往版本</td></tr>
+    <tr><td>N-19</td><td>人工确认门控</td><td>资源批准、正式变更、生产切换、UAT 签署、最终验收五类责任动作必须人工确认，系统不得自动执行</td></tr>
+    <tr><td>N-20</td><td>自动停止与失败透明</td><td>来源不足 / 解析失败 / 关键假设未确认 / 责任动作即将发生时自动停止，并明确提示原因与影响范围</td></tr>
+    <tr><td>N-21</td><td>质量门不可放松</td><td>P1/P2 缺陷 = 0、总体通过率 ≥ 95%、数据准确率 ≥ 99.5%、Go/No-Go 必须由责任人决定、UAT 签署与最终验收必须人工完成；任何进度优化不得触碰质量门与批准边界（禁止清单见 7.6）</td></tr>
+  </table>
+  <blockquote>
+    <p>课程1 非功能需求（N-01~N-11：本地部署、数据本地化、凭据安全、敏感信息、授权边界、可追溯、容错、并发安全、工具权限、失败透明、记忆治理）与课程2 非功能需求（N-12~N-15：原始文件只读、数据审计层、数据不替代判断、跨表证据不自动证明因果）为共同基线，本课程沿用，见《项目需求说明书-课程1》与《项目需求说明书-课程2》第 5 节。</p>
+  </blockquote>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>数据需求</h2>
+  <h3>6.1 数据来源（课程3：计划材料与授权边界）</h3>
+  <p>课程3 新增的是<strong>未来约束材料</strong>，不是再做一次文档整理或数据接入。按授权分为三段：既有事实底座直接复用、课程3 新增授权只读接入、动态事件文件暂不授权。</p>
+  <table>
+    <tr><th>分组</th><th>编号</th><th>材料</th><th>典型内容</th><th>效力定位</th><th>接入方式</th></tr>
+    <tr><td>计划基线</td><td>A01</td><td>项目总控进度计划</td><td>控制基线、当前预测、工作包与里程碑</td><td>基线 / 预测</td><td>只读接入</td></tr>
+    <tr><td>计划基线</td><td>A02</td><td>各专业剩余工作反馈</td><td>本地工作项、工期估算、依赖与候选资源</td><td>专业估算</td><td>只读接入</td></tr>
+    <tr><td>资源与日历</td><td>B01</td><td>资源池及可用日历</td><td>人员能力、日期区间、每日容量与既有承诺</td><td>容量基线</td><td>只读接入</td></tr>
+    <tr><td>资源与日历</td><td>B02</td><td>关键测试资源借调申请</td><td>待批准资源情景</td><td>申请（未批准）</td><td>只读接入</td></tr>
+    <tr><td>外部条件与协同</td><td>C01</td><td>供应商进场计划</td><td>外部资源承诺与前置条件</td><td>供应商承诺</td><td>只读接入</td></tr>
+    <tr><td>外部条件与协同</td><td>C02</td><td>生产环境与变更窗口通知</td><td>材料截止、可用窗口与运维限制</td><td>窗口通知</td><td>只读接入</td></tr>
+    <tr><td>外部条件与协同</td><td>C03</td><td>协调会纪要</td><td>已决定事项、行动项、讨论项与待决事项</td><td>会议讨论</td><td>只读接入</td></tr>
+    <tr><td>动态事件</td><td>D01—D04</td><td>供应商进场延期通知、生产故障支援资源调用通知、分阶段上线变更申请、计划调整协调会纪要</td><td>触发计划调整的事件材料</td><td>事件</td><td>本期不授权（V1 冻结后由教师发放）</td></tr>
+  </table>
+  <blockquote>
+    <p><strong>数据现状与实施前置</strong>：项目既有 <code>02_模拟数据包/</code> 仅含课程2 的七类结构化数据（<code>01_工作进度</code> ~ <code>07_采购与交付</code>），不含 A / B / C / D 类计划材料。课程3 功能依赖这批材料才能端到端验证，故已按课件口径补充模拟数据包 <code>03_模拟数据包-课程3/</code>（计划基线 A01/A02、资源与日历 B01a/B01b/B01c/B02、外部条件与协同 C01/C02/C03、动态事件 D01—D04，共 13 个 CSV + README），文件命名与目录约定见包内 README。此项前置<strong>已完成</strong>，详见第 9 节差距项。</p>
+  </blockquote>
+  <h3>6.2 计划实体与 ID 体系</h3>
+  <p>课程3 的核心数据对象，以稳定 ID 互相关联：</p>
+  <table>
+    <tr><th>实体</th><th>主键 / 标识</th><th>说明</th><th>联动关系</th></tr>
+    <tr><td>活动</td><td>activity_id（A401—A427）</td><td>排程与呈现的基本单位</td><td>归属父任务、关联资源与里程碑</td></tr>
+    <tr><td>父任务</td><td>task_id（T05—T15）</td><td>WBS 层级中的父任务</td><td>含多个活动</td></tr>
+    <tr><td>资源</td><td>resource_id</td><td>人员、设备与物料</td><td>通过日期区间容量参与排程</td></tr>
+    <tr><td>里程碑</td><td>milestone_id（如 MS-A411）</td><td>关键节点</td><td>偏差可计算</td></tr>
+    <tr><td>来源记录</td><td>source_record_id</td><td>原始材料与定位</td><td>支持证据追溯</td></tr>
+    <tr><td>计划版本</td><td>plan_version（V1 / V2 / S1 / S2 / S3）</td><td>计划版本与情景</td><td>每次调整派生新版本</td></tr>
+    <tr><td>事件</td><td>event_id（D01—D04）</td><td>动态事件标识</td><td>触发版本派生与情景生成</td></tr>
+  </table>
+  <blockquote>
+    <p><strong>主键纪律</strong>：禁止使用姓名、描述或行号作为跨表主键；映射保留原始 ID 与描述，不覆盖来源（见 F-69）。</p>
+  </blockquote>
+  <h3>6.3 文件效力分级与日期口径</h3>
+  <p>八类日期从效力强到效力弱，效力决定它能否进入排程：</p>
+  <table>
+    <tr><th>效力</th><th>日期类型</th><th>含义</th><th>能否进入 V1 正式排程</th></tr>
+    <tr><td>强</td><td>基线日期</td><td>已经批准的控制参照</td><td>可以</td></tr>
+    <tr><td>强</td><td>实际日期</td><td>已经发生的历史事实</td><td>可以</td></tr>
+    <tr><td>中</td><td>当前预测</td><td>按现状推算的可能结果</td><td>可以（标注为预测）</td></tr>
+    <tr><td>中</td><td>专业估算</td><td>团队提交的候选工期</td><td>需人工确认后可以</td></tr>
+    <tr><td>中</td><td>供应商承诺</td><td>附带前置条件的外部承诺</td><td>需确认前置条件</td></tr>
+    <tr><td>中</td><td>窗口通知</td><td>已经发布的可用时间边界</td><td>作为边界约束</td></tr>
+    <tr><td>弱</td><td>申请日期</td><td>待批准情景</td><td>不可以（仅进入批准情景）</td></tr>
+    <tr><td>弱</td><td>会议讨论</td><td>需逐条区分决定、行动与待决事项</td><td>不可以（需先确认为决定）</td></tr>
+  </table>
+  <blockquote>
+    <p><strong>效力四问</strong>：谁发布的这个日期？何时开始有效？是否已获得正式批准？能否被历史记录追溯？——先判断日期是什么，才能决定它能不能进入排程。</p>
+  </blockquote>
+  <h3>6.4 排程规则与计算口径</h3>
+  <p>日期不是拍出来的，而是五类约束共同算出来的：</p>
+  <table>
+    <tr><th>约束</th><th>内容</th><th>作用</th></tr>
+    <tr><td>依赖关系</td><td>前置活动未完成、有强制顺序约束</td><td>决定最早开始时间</td></tr>
+    <tr><td>工作日历</td><td>工作日与节假日、班次与工作时段</td><td>决定可用工作时间</td></tr>
+    <tr><td>资源容量</td><td>人员数量与技能、设备与物料数量</td><td>决定并行执行能力</td></tr>
+    <tr><td>外部窗口</td><td>合同交付窗口、审批或第三方窗口</td><td>决定可交付时机</td></tr>
+    <tr><td>质量门</td><td>检查与验收要求、必经评审与批准</td><td>确保质量合规通过</td></tr>
+  </table>
+  <p><strong>V1 计算输出</strong>：开始日期、完成日期、总时差、关键路径、里程碑偏差，确定性计算、不含主观判断。</p>
+  <h3>6.5 关键指标口径</h3>
+  <table>
+    <tr><th>指标</th><th>定义与公式</th><th>单位 / 说明</th></tr>
+    <tr><td>总时差（Float）</td><td>最晚开始时间 − 最早开始时间</td><td>工作日；关键路径活动接近 0</td></tr>
+    <tr><td>里程碑偏差</td><td>计划里程碑日期 − 基线里程碑日期</td><td>天；正为延期</td></tr>
+    <tr><td>资源可用性</td><td>日期区间容量 − 其他已承诺工作</td><td>小时 / 日</td></tr>
+    <tr><td>资源利用率</td><td>并发需求 ÷ 可用容量</td><td>%；示例 2027-04-06 P004 = 10.5 / 8 = 131%</td></tr>
+    <tr><td>关键路径长度</td><td>关键链上活动工期在日历约束下的累计跨度</td><td>工作日</td></tr>
+    <tr><td>方案增量成本</td><td>方案相对 V1 的增量成本与其来源依据</td><td>元；<strong>估算值</strong></td></tr>
+    <tr><td>方案工期变化</td><td>方案相对 V1 的工期变化</td><td>工作日</td></tr>
+  </table>
+  <blockquote>
+    <p><strong>成本与工期数据口径说明</strong>：6.5 与 3.8 中出现的 S1 / S2 / S3 结果与代价（如 S2 的 P011 约 48 小时 = 6 人日、内部机会成本约 6,600 元；S3 的 +4 工作日、增量成本 45,000 元；S1 的新增成本 0）全部来自<strong>《课程3PPT.pdf》第 27 页示例，属虚构教学数据，标注为「估算」</strong>，不构成财务承诺，最终以正式变更审批（如 CHG-CY-2027-004）为准。资源的日期区间容量、并发需求与利用率同理来自课件示例（第 23 页），实施时以实际数据包为准。</p>
+  </blockquote>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>业务规则与约束</h2>
+  <h3>7.1 三代能力链的衔接</h3>
+  <p>同一个项目（CY-DCM-2026-01）、同一个私人 Agent，能力持续生长：</p>
+  <table>
+    <tr><th>阶段</th><th>回答的问题</th><th>核心</th><th>输出</th></tr>
+    <tr><td>课程1 文档事实</td><td>哪些事实可信</td><td>授权、检索、来源、约束、记忆</td><td>文件、证据、事实、记忆</td></tr>
+    <tr><td>课程2 状态判断</td><td>项目现在怎样</td><td>多期数据、指标、趋势、预警、决策依据</td><td>数据、指标、趋势、预警</td></tr>
+    <tr><td>课程3 未来执行</td><td>接下来怎样做</td><td>WBS、顺序、日历、资源、调整、人工确认</td><td>可执行、可调整、可追溯、可负责的计划</td></tr>
+  </table>
+  <blockquote>
+    <p>事实是底座，状态形成判断，计划才把判断转成未来行动。课程3 不是重复监控，而是把偏差转成未来执行方案。</p>
+  </blockquote>
+  <h3>7.2 文件效力分级与效力四问</h3>
+  <p>先判定文件效力，再决定它如何进入计划。效力强（历史 / 已批准）到效力弱（预测 / 待批准）共八类（见 6.3）；任何日期进入排程前必须通过效力四问（谁发布、何时生效、是否批准、能否追溯）。把无效日期排进甘特图，只会得到精确的假计划。</p>
+  <h3>7.3 五类管理性错误（防错清单）</h3>
+  <p>看起来完整的甘特图，可能同时包含五类隐藏但致命的管理性错误：</p>
+  <table>
+    <tr><th>#</th><th>错误</th><th>后果表现</th></tr>
+    <tr><td>1</td><td>用预测日期覆盖批准基线</td><td>开始日期很精确，资源却无法到位</td></tr>
+    <tr><td>2</td><td>把资源申请当作已获批容量</td><td>里程碑看似可达，责任人却没有承诺</td></tr>
+    <tr><td>3</td><td>把会议讨论当作正式决定</td><td>决定缺乏批准依据，执行时被推翻</td></tr>
+    <tr><td>4</td><td>忽略人员每日容量和既有承诺</td><td>同一资源被重复占用，形成真实冲突</td></tr>
+    <tr><td>5</td><td>为追赶日期压缩测试、验收或签署门</td><td>关键路径被标红，计算依据却无法复核</td></tr>
+  </table>
+  <blockquote>
+    <p>图画得越精确，错误约束造成的误导越大。</p>
+  </blockquote>
+  <h3>7.4 依赖遗漏的放大链条</h3>
+  <p>漏掉一条依赖，延期与成本会沿链条放大：依赖节点被忽略 → 并行变为串行 → 资源冲突与排队等待 → 关键路径被迫绕行 → 生产窗口或验收节点错失无法补救 → 加班、外援、等待与变更成本增加 → 最终交付继续后移。</p>
+  <blockquote>
+    <p>计划错误的危害不在一张图，而在它会错误地组织真实资源与责任。影响逐级放大，越往后越难追回。</p>
+  </blockquote>
+  <h3>7.5 五类约束共同作用</h3>
+  <p>依赖关系、工作日历、资源容量、外部窗口、质量门五类约束共同作用，才能计算出活动的最早、最晚与基准日期（见 6.4）。任何一个约束缺失，得到的日期都只是「看起来合理」，而不是真正可执行的计划。</p>
+  <h3>7.6 质量门与批准边界不可作为「优化」手段</h3>
+  <p>本项目不可放松的质量门：P1/P2 缺陷 = 0、总体通过率 ≥ 95%、数据准确率 ≥ 99.5%、Go/No-Go 必须由责任人决定、UAT 签署与最终验收必须人工完成。</p>
+  <p><strong>禁止作为「优化」的五项动作</strong>：取消全量回归、把申请改写成批准、强行进入生产窗口、用无限加班替代资源决策、自动签署 / 验收 / 正式变更。</p>
+  <blockquote>
+    <p>日期目标不能凌驾于质量与责任之上；计划优化只能调整可调整项，不能偷偷放松质量门和批准边界。</p>
+  </blockquote>
+  <h3>7.7 六个问题与同一计划版本</h3>
+  <p>一个可执行的计划必须答清六个问题，且六个问题的答案必须落到<strong>同一 activity_id 和同一计划版本</strong>：</p>
+  <table>
+    <tr><th>问题</th><th>检查内容</th></tr>
+    <tr><td>做什么？</td><td>剩余工作与交付物是否完整</td></tr>
+    <tr><td>谁来做？</td><td>责任资源与候选资源是否可用</td></tr>
+    <tr><td>哪里冲突？</td><td>容量、依赖、窗口和里程碑如何影响</td></tr>
+    <tr><td>先后如何？</td><td>前置关系和质量门是否成立</td></tr>
+    <tr><td>何时做？</td><td>工作日历、窗口和工期如何计算</td></tr>
+    <tr><td>谁来确认？</td><td>哪些事项需要资源、变更、运维或验收责任人批准</td></tr>
+  </table>
+  <blockquote>
+    <p>缺少任何一个问题，计划都可能只是一张不能执行的时间图。</p>
+  </blockquote>
+  <h3>7.8 规则算数字、Agent 做解释、人承担责任</h3>
+  <p>三层分工不可混淆：</p>
+  <table>
+    <tr><th>层</th><th>职责</th><th>边界</th></tr>
+    <tr><td>确定性排程引擎</td><td>依赖、日历、工期、资源容量、关键路径计算</td><td>可复核规则，确定性计算，不含主观判断</td></tr>
+    <tr><td>交互式计划界面</td><td>看板、待办、WBS、甘特、资源负荷、预警、版本比较</td><td>多视图共享同一计划与同一版本</td></tr>
+    <tr><td>人工决策与责任确认</td><td>资源批准、正式变更、生产切换、UAT 签署、最终验收</td><td>责任动作必须由人完成</td></tr>
+    <tr><td>千问（Agent）</td><td>解释原因、归纳影响、比较方案、生成建议草案</td><td><strong>不得编造日期、不得放松规则、不得替人批准</strong></td></tr>
+  </table>
+  <blockquote>
+    <p>数字由规则计算，建议由 Agent 解释，责任由人承担。</p>
+  </blockquote>
+  <h3>7.9 变更同步所有管理视图</h3>
+  <p>一次活动日期或资源变化，必须同步七项视图：WBS 结构保持一致、甘特日期重新计算、资源负荷同步变化、关键路径重新识别、看板与待办更新、冲突预警重新评估、计划版本留下差异。所有视图共享同一 activity_id、同一规则和同一版本，来源与确认状态仍可追溯。</p>
+  <blockquote>
+    <p>Agent 的价值不是多画几张图，而是让计划对象、证据和变化保持一致。</p>
+  </blockquote>
+  <h3>7.10 调整派生新版本，不抹掉旧计划</h3>
+  <p>动态调整是<strong>追加事件与派生版本</strong>，不是把昨天的计划改到看不见：V1 冻结后追加 D01—D04 事件，先判断事件效力（立即生效 / 条件生效 / 仅情景模拟 / 仅形成比对任务），再派生 V2 与 S1 / S2 / S3 备选方案；每个变化保留 event_id、来源、时间、影响对象与确认状态。历史版本始终保留。</p>
+  <h3>7.11 建议六要素与人工确认关卡</h3>
+  <p>一条合格的决策支持建议必须包含六个要素：具体对象、证据、责任人、期限、替代方案、待确认事项。人工确认关卡覆盖五类责任动作：资源批准、正式变更、生产切换、UAT 签署、最终验收。Agent 只生成建议草案，不执行责任动作。</p>
+  <blockquote>
+    <p>建议只有能够被确认、分配、跟踪和复核，才真正支持项目决策。</p>
+  </blockquote>
+  <h3>7.12 计划闭环九步</h3>
+  <p>计划进入闭环，才具备管理价值。计划闭环按九步执行，其中第 5 步与第 9 步为人工确认节点：</p>
+  <table>
+    <tr><th>#</th><th>步骤</th><th>说明</th></tr>
+    <tr><td>1</td><td>授权新增</td><td>只读接入课程3 新增计划材料</td></tr>
+    <tr><td>2</td><td>判断文件角色与效力</td><td>效力分级 + 效力四问</td></tr>
+    <tr><td>3</td><td>检查 ID、日期、依赖与容量</td><td>输入检查七问</td></tr>
+    <tr><td>4</td><td>建立统一 WBS 与稳定映射</td><td>activity_id / task_id 映射</td></tr>
+    <tr><td>5</td><td>人工确认约束、假设与待批准项</td><td><strong>人工确认节点</strong></td></tr>
+    <tr><td>6</td><td>用确定性规则形成计划 V1</td><td>确定性排程</td></tr>
+    <tr><td>7</td><td>在同一界面联动展示计划</td><td>多视图共享同一计划</td></tr>
+    <tr><td>8</td><td>追加事件并派生 V2 与备选方案</td><td>事件效力判定 + 情景生成</td></tr>
+    <tr><td>9</td><td>人工确认责任动作并保存证据</td><td><strong>人工确认节点</strong> + 恢复点</td></tr>
+  </table>
+  <blockquote>
+    <p>新信息进入下一轮，历史版本始终保留。</p>
+  </blockquote>
+  <blockquote>
+    <p>课程1 业务规则（四道门、授权-停下、输出要求、事实状态判定、指令三层治理、检索与上下文边界、Agent 四大组件与工作章程、工具权限治理、记忆治理、知识库治理、干系人分层表达与人工确认关卡）与课程2 业务规则（数据治理四原则、决策支持三问、预警落到对象原因责任人期限、数据不替代判断、误判之门、决策支持四层次、预警四步闭环、分层架构）为共同基线，本课程沿用，见《项目需求说明书-课程1》与《项目需求说明书-课程2》第 7 节。</p>
+  </blockquote>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>后续迭代约定</h2>
+  <blockquote>
+    <p>以下为项目维护的固定工作流，团队成员（含 Agent 角色）须遵守。</p>
+  </blockquote>
+  <ol><li><strong>先文档后代码</strong>：任何功能变更，先更新本《项目需求说明书》，再更新代码。</li><li><strong>代码交给 coder</strong>：代码层面的改动由 coder 角色负责实现，不越过该角色直接改代码。</li><li><strong>资产同仓</strong>：技术架构、需求说明书与代码同仓维护，保持同步。</li><li><strong>双轨同步</strong>：本 .md 是唯一编辑入口，修改后须重新生成对应 .html 交付物，保证「源稿」与「交付物」一致。</li></ol>
+</section>
+
+<section id="s9">
+  <h2><span class="n">9</span>课程3 修改计划</h2>
+  <blockquote>
+    <p>按「先文档后代码」约定，将课程3「计划与资源智能调度」拆分为实施阶段并映射课程口径的角色；阶段0（本文档）为其余阶段的前置条件。当前状态：阶段0~4 已完成，阶段5~6 待实施。</p>
+    <p></p>
+    <p><strong>角色列说明</strong>：表中「角色」沿用课件的能力分工口径（writer / coder / reviewer / publisher），用于说明阶段职责；当前项目由单一 Agent（WorkBuddy）端到端实现，尚未划分独立角色，实施时未做角色边界划分。</p>
+  </blockquote>
+  <table>
+    <tr><th>阶段</th><th>角色</th><th>工作内容</th><th>产出</th><th>状态</th></tr>
+    <tr><td>阶段0</td><td>writer</td><td>编写本《项目需求说明书》：课程3 八项能力功能需求（F-63~F-90）、数据需求（A/B/C/D 计划材料 + ID 体系 + 效力分级 + 排程与指标口径）、业务规则 7.1~7.12、非功能 N-16~N-21、修改计划与对照表</td><td>v1.0.0 文档</td><td><span class="s-done">✅ 已完成</span></td></tr>
+    <tr><td>阶段1</td><td>coder</td><td>补充课程3 模拟数据包（A/B/C 类计划材料）与数据层 schema（计划材料、活动与 WBS、依赖、资源与日历、计划版本、事件、冲突预警、证据与恢复点）</td><td>数据与后端基础设施</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>阶段2</td><td>coder</td><td>实现文件效力识别与输入检查（F-63~F-66）、WBS 映射与稳定 ID（F-67~F-69）、五类约束归集（F-70~F-72）、确定性排程引擎与关键路径（F-73~F-75、F-82）</td><td>后端排程能力</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>阶段3</td><td>coder</td><td>实现交互式计划界面：七类视图联动、甘特交互与活动详情、多视图一致性（F-76~F-78）；资源负荷计算、冲突识别与分配方案（F-79~F-81）；冲突预警六要素与状态流转（F-83~F-84）</td><td>前端计划界面</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>阶段4</td><td>coder</td><td>实现版本冻结与恢复点、事件效力判定与派生 V2、方案比较、建议六要素与人工确认门控、证据与审计轨迹、自动停止（F-85~F-90）</td><td>动态调整与治理能力</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>阶段5</td><td>reviewer + publisher</td><td>审查代码 + 发布</td><td>版本发布</td><td><span class="s-todo">⬜ 待实现</span></td></tr>
+    <tr><td>阶段6</td><td>验收</td><td>按「排程—扰动—再决策」完整循环提交四阶段证据</td><td>验收通过</td><td><span class="s-todo">⬜ 待实现</span></td></tr>
+  </table>
+  <p><strong>四阶段验收证据清单（对照 PPT 第 29 页）</strong>：</p>
+  <table>
+    <tr><th>阶段</th><th>内容</th><th>证据</th></tr>
+    <tr><td>阶段1 形成 V1</td><td>授权 A/B/C 组材料 → 检查效力 → 建立 WBS → 确认约束 → 确定性排程 → 冻结版本</td><td>交互式计划板块、V1 版本记录</td></tr>
+    <tr><td>阶段2 接收扰动</td><td>依次追加 D01、D02、D03、D04，不覆盖 V1</td><td>追加事件记录、V1 完整性证明</td></tr>
+    <tr><td>阶段3 形成 V2 与方案</td><td>判断事件效力 → 重新计算 → 比较 S1 / S2 / S3 → 形成六要素建议 → 停在人工确认前</td><td>V2 与方案记录、冲突与方案记录</td></tr>
+    <tr><td>阶段4 责任确认与证据</td><td>保存证据索引和恢复点 → 提交证据</td><td>人工确认状态、恢复点、证据索引</td></tr>
+  </table>
+  <p><strong>课程3 差距项（现有代码 → 目标）</strong>：</p>
+  <table>
+    <tr><th>差距项</th><th>现状</th><th>目标</th><th>状态</th></tr>
+    <tr><td>计划材料数据源</td><td><code>02_模拟数据包/</code> 仅含课程2 七类结构化数据，无 A/B/C/D 类计划材料</td><td>按课件口径补充计划材料模拟数据包</td><td><span class="s-done">✅ 已补齐（<code>03_模拟数据包-课程3/</code>，13 个 CSV + README）</span></td></tr>
+    <tr><td>文件效力与输入检查</td><td>无</td><td>效力八级分类 + 效力四问 + 输入检查七问输出</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>WBS 与稳定 ID</td><td>无</td><td>统一 WBS（activity_id / task_id）+ 稳定 ID 联动体系</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>依赖与约束</td><td>无</td><td>依赖关系（Finish-to-Start）+ 五类约束归集 + 确认状态</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>确定性排程</td><td>无</td><td>规则引擎输出开始 / 完成 / 总时差 / 关键路径 / 里程碑偏差</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>交互式计划界面</td><td>无</td><td>七类视图 + 甘特交互 + 多视图一致性</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>资源负荷与分配</td><td>课程2 仅有利用率指标，无日期区间容量与冲突处理</td><td>可用性计算 + 冲突识别 + 分配方案</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>计划版本与动态调整</td><td>课程2 仅有数据快照（T1/T2/T3），无计划版本</td><td>V1 冻结 + 事件效力判定 + V2 / S 情景派生</td><td><span class="s-done">✅ 已实现</span></td></tr>
+    <tr><td>证据与恢复点</td><td>课程2 有清洗日志与指标溯源，无计划证据索引</td><td>证据索引 + 恢复点 + 自动停止</td><td><span class="s-done">✅ 已实现</span></td></tr>
+  </table>
+  <p><strong>课程3 实现产物清单</strong>：</p>
+  <table>
+    <tr><th>层</th><th>产物</th><th>说明</th></tr>
+    <tr><td>数据包</td><td><code>03_模拟数据包-课程3/</code>（13 CSV + README）</td><td>A/B/C 三组只读接入，D 组本期不授权；生成器 <code>pm-assistant/tools/gen_course3_dataset.py</code> 可复现</td></tr>
+    <tr><td>数据层</td><td><code>backend/db.py</code> 新增 14 张计划实体表</td><td>plan_materials / plan_activities / plan_dependencies / plan_resources / plan_resource_capacity / plan_activity_demand / plan_versions / plan_snapshots / plan_events / plan_conflicts / plan_confirmations / plan_evidence / plan_stops / plan_advices</td></tr>
+    <tr><td>引擎</td><td><code>backend/planning.py</code></td><td>材料接入 → 效力四问 → 输入检查七问 → WBS 映射 → 依赖解析（含条件语句解析表）→ 五类约束 → 工作日历 + CPM 确定性排程 → 资源可用性与冲突 → 关键路径 → V1 冻结 → 事件效力判定与派生 → 方案比较 → 建议六要素 → 证据与自动停止</td></tr>
+    <tr><td>接口</td><td><code>backend/routers/planning.py</code>（24 个端点）</td><td>覆盖输入检查、效力、WBS、约束、日历、排程、关键路径、资源负荷、冲突状态流转、版本、事件应用、方案、建议、确认关卡、证据、停止</td></tr>
+    <tr><td>界面</td><td><code>frontend/src/components/Planning.jsx</code></td><td>十类视图：输入与效力 / WBS / 看板 / 甘特 / 资源负荷 / 关键路径 / 冲突预警 / 版本比较 / 建议与确认 / 证据与停止；含活动详情（F-77）</td></tr>
+    <tr><td>配置</td><td><code>backend/config.py</code> 新增 <code>plan_dataset_dir</code></td><td>以工作区根目录为锚点解析 <code>03_模拟数据包-课程3</code>；容器内用 <code>AGENT_PLAN_DATASET</code> 覆盖</td></tr>
+  </table>
+  <p><strong>验收锚点复现结果</strong>（后端引擎确定性计算，非硬编码）：关键路径 10 项活动 = A411 → A412 → A413 → A415 → A416 → A417 → A422 → A423 → A426 → A427（总时差均为 0）；A423 生产切换 = 2027-04-29；A427 最终验收 = 2027-05-04；P004 于 2027-04-06 并发需求 10.5h ÷ 有效容量 8h = 131.2%；依赖解析 16 条已结构化 + 4 条自然语言候选（待确认）；D01—D04 事件效力分别判定为条件生效 / 立即生效 / 仅情景模拟 / 仅形成比对任务。</p>
+</section>
+
+<section id="s10">
+  <h2><span class="n">10</span>课程要点覆盖对照（对照 课程3PPT.pdf）</h2>
+  <table>
+    <tr><th>PPT 要点（页码）</th><th>本文档落点</th></tr>
+    <tr><td>看见延期不等于知道明天怎么排；项目经理四问（p3）</td><td>1.3 目标用户、2.1 背景</td></tr>
+    <tr><td>未来计划藏在多份效力不同的文件里（p4）</td><td>2.1、6.1</td></tr>
+    <tr><td>日期先辨效力；八类日期 + 效力四问（p5）</td><td>F-64、F-65、6.3、7.2</td></tr>
+    <tr><td>五类管理性错误（p6）</td><td>7.3</td></tr>
+    <tr><td>依赖遗漏的放大链条（p7）</td><td>7.4、F-70</td></tr>
+    <tr><td>质量门与批准边界不可放松；五项禁止（p8）</td><td>N-21、7.6</td></tr>
+    <tr><td>监控解释现在、调度决定下一步（p9）</td><td>1.1、7.1</td></tr>
+    <tr><td>计划闭环九步（p10）</td><td>7.12</td></tr>
+    <tr><td>六个问题落到同一 activity_id 与同一版本（p11）</td><td>7.7</td></tr>
+    <tr><td>规则算数字 / Agent 做解释 / 人承担责任（p12、p20）</td><td>7.8、F-74、F-75</td></tr>
+    <tr><td>一次变更同步所有管理视图（p13）</td><td>F-78、7.9</td></tr>
+    <tr><td>八项能力沿同一计划因果链（p14）</td><td>第 3 节（F-63~F-88）</td></tr>
+    <tr><td>可控、可追溯、可恢复；四类自动停止（p15）</td><td>F-89、F-90、N-16~N-20</td></tr>
+    <tr><td>只接入会改变未来计划的新增材料；D 类暂不授权（p16）</td><td>F-63、6.1</td></tr>
+    <tr><td>输入检查七问与检查输出（p17）</td><td>F-66</td></tr>
+    <tr><td>稳定 ID 是锚点；禁用姓名 / 描述 / 行号做主键（p18）</td><td>F-67~F-69、6.2</td></tr>
+    <tr><td>五类约束决定日期（p19）</td><td>F-71、6.4、7.5</td></tr>
+    <tr><td>所有管理视图共享同一份计划（p21）</td><td>F-76、F-77</td></tr>
+    <tr><td>关键路径是可计算的活动链（p22）</td><td>F-82</td></tr>
+    <tr><td>名单里有这个人不等于那天有容量；131% 案例（p23）</td><td>F-79~F-81、6.5</td></tr>
+    <tr><td>预警六要素与四状态（p24）</td><td>F-83、F-84</td></tr>
+    <tr><td>调整派生新版本、不抹掉旧计划（p25）</td><td>F-85、F-86、7.10</td></tr>
+    <tr><td>先判断文件效力再决定重算 / 模拟 / 等待（p26）</td><td>F-86</td></tr>
+    <tr><td>没有绝对最优，只有取舍清楚的方案（p27）</td><td>F-87、6.5</td></tr>
+    <tr><td>建议六要素与人工确认关卡（p28）</td><td>F-88、7.11</td></tr>
+    <tr><td>上机四阶段「排程—扰动—再决策」（p29）</td><td>9 修改计划与验收证据</td></tr>
+    <tr><td>四个价值：可执行 / 可调整 / 可追溯 / 可负责（p30）</td><td>2.2 建设目标</td></tr>
+  </table>
+  <blockquote>
+    <p>合规声明：本方案为产品设计参考，具体实施请结合公司合规与法务要求确认。</p>
+  </blockquote>
+</section>
+
+<footer>
+  项目管理智能助手 · 项目需求说明书（课程3）v1.1.0 · 本文档为 .html 交付物，源稿见 项目需求说明书-课程3.md（唯一编辑入口）
+</footer>
+
+</div>
+</body>
+</html>

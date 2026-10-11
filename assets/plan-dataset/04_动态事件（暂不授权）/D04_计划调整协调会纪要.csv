@@ -1,0 +1,2 @@
+﻿project_id,event_id,event_type,meeting_id,issued_at,item_type,item_content,conclusion,owner,deadline,event_authority,approval_status,required_action,note
+CY-DCM-2026-01,D04,计划调整协调会纪要,MT-2027-0405,2027-04-05 17:30:00,讨论项,在资源稳定、工期优先、业务分阶段三类方案间比较取舍,已分发，未形成批准决定；建议按 S1/S2/S3 三类情景并行比较,唐明宇,2027-04-07,仅形成比对任务,已分发/无批准决定,比较工期、成本与资源稳定方案，形成待确认事项；不直接修改 V1,V1 冻结后由教师发放

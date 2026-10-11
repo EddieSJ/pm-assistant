@@ -1,0 +1,2 @@
+﻿project_id,event_id,event_type,issuer,issued_at,resource_id,affected_activity_ids,effective_start,effective_end,new_capacity_hours_per_day,event_authority,approval_status,required_action,note
+CY-DCM-2026-01,D02,生产故障支援资源调用通知,运维管理部门,2027-04-05 14:00:00,P004,A408;A410;A411,2027-04-06,2027-04-07,2.0,立即生效,已批准,立即把 P004 在 04-06 至 04-07 的有效容量降为 2 小时/日，并重算冲突,V1 冻结后由教师发放

@@ -7,7 +7,16 @@ from fastapi.staticfiles import StaticFiles
 
 import config
 import datasmart
-from routers import analysis, chat, datasmart as datasmart_router, docs, projects
+from routers import (
+    analysis,
+    chat,
+    datasmart as datasmart_router,
+    deliverables as deliverables_router,
+    docs,
+    memory as memory_router,
+    planning as planning_router,
+    projects,
+)
 
 app = FastAPI(title="项目管理智能助手", version="0.1.0")
 
@@ -23,6 +32,9 @@ app.include_router(analysis.router)
 app.include_router(chat.router)
 app.include_router(docs.router)
 app.include_router(datasmart_router.router)
+app.include_router(deliverables_router.router)
+app.include_router(memory_router.router)
+app.include_router(planning_router.router)
 
 
 @app.on_event("startup")

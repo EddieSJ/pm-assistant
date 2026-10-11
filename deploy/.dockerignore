@@ -1,0 +1,20 @@
+# 依赖与缓存
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.venv
+**/node_modules
+
+# 本地数据与运行产物（云端不持久，且不随镜像分发）
+**/data
+**/*.db
+**/results
+**/logs
+
+# 密钥：绝不进镜像
+**/.env
+**/*.env
+
+# 编辑器 / 系统
+**/.idea
+**/.DS_Store

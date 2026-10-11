@@ -1,0 +1,7 @@
+{
+  "envId": "pm-assistant-d2g7eu0dk3a821546",
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "cloudrun": {
+    "name": "pm-assistant-api"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Course1CurrentTaskMemory",
+  "type": "object",
+  "required": ["task_id", "project_code", "objective", "as_of_date", "loaded_sources", "confirmed_facts", "conflicts", "actions", "outputs", "next_steps"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "project_code": {"type": "string"},
+    "objective": {"type": "string"},
+    "as_of_date": {"type": "string", "format": "date"},
+    "loaded_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["file", "version_or_date", "loaded_at"],
+        "properties": {
+          "file": {"type": "string"},
+          "version_or_date": {"type": "string"},
+          "loaded_at": {"type": "string"}
+        }
+      }
+    },
+    "confirmed_facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["field", "value", "source", "status"],
+        "properties": {
+          "field": {"type": "string"},
+          "value": {},
+          "source": {"type": "string"},
+          "status": {"enum": ["confirmed", "provisional", "needs_confirmation"]}
+        }
+      }
+    },
+    "conflicts": {"type": "array", "items": {"type": "object"}},
+    "actions": {"type": "array", "items": {"type": "object"}},
+    "outputs": {"type": "array", "items": {"type": "object"}},
+    "next_steps": {"type": "array", "items": {"type": "string"}},
+    "sensitive_data_stored": {"type": "boolean", "const": false}
+  }
+}

@@ -18,6 +18,15 @@ const BOARD_TABS = [
 
 const EMPTY = '暂无数据，请先运行数据管道或补充对应数据源'
 
+// 八类看板 → 相关指标（custom 展示全部）
+const METRIC_KIND = {
+  progress: ['PV', 'EV', 'SPI', 'progress_plan', 'progress_actual', 'progress_dev'],
+  cost: ['AC', 'BAC', 'CPI', 'EAC', 'completion_dev'],
+  staff: ['plan_hours', 'actual_hours', 'overtime_hours', 'hours_util'],
+  quality: ['high_defects'],
+  procurement: ['delayed_milestones', 'delayed_deliveries'],
+}
+
 export default function DataSmart() {
   const [projects, setProjects] = useState([])
   const [pid, setPid] = useState(null)
@@ -102,8 +111,8 @@ export default function DataSmart() {
 
   const trendData = (board?.trend || []).map((t) => ({
     node: t.node,
-    计划: t.spi ? 100 : null,
-    实际: t.spi ? Math.round(t.spi * 100) : null,
+    计划: t.progress_plan ?? null,
+    实际: t.progress_actual ?? null,
     预测: null,
   }))
   if (forecast && forecast.predicted != null && trendData.length) {
@@ -113,10 +122,16 @@ export default function DataSmart() {
   const devData = (board?.trend || []).filter((t) => t.progress_dev != null)
     .map((t) => ({ node: t.node, 偏差: t.progress_dev }))
 
-  const radarData = ['SPI', 'CPI', 'hours_util'].map((code) => ({
-    维度: code,
-    值: metricVal(code) != null ? Math.round(Math.min(metricVal(code), 2) * 50) : 0,
-  }))
+  // 六维风险雷达：以指标换算 0~100 风险指数（越高风险越大）
+  const clamp = (n) => Math.max(0, Math.min(100, Math.round(n)))
+  const radarData = [
+    { 维度: '进度', 风险: clamp((1 - (metricVal('SPI') ?? 1)) * 100) },
+    { 维度: '成本', 风险: clamp((1 - (metricVal('CPI') ?? 1)) * 100) },
+    { 维度: '质量', 风险: clamp((metricVal('high_defects') ?? 0) * 20) },
+    { 维度: '资源', 风险: clamp(Math.max(0, (metricVal('hours_util') ?? 1) - 1) * 100) },
+    { 维度: '采购', 风险: clamp((metricVal('delayed_deliveries') ?? 0) * 20) },
+    { 维度: '合规', 风险: clamp(((metricVal('risk_score') ?? 0) / 40) * 100) },
+  ]
 
   const project = projects.find((p) => p.id === pid)
 
@@ -181,7 +196,7 @@ export default function DataSmart() {
           <div className="datasmart-charts">
             {trendData.length >= 2 ? (
               <div className="datasmart-chart">
-                <h4>计划 vs 实际 vs 预测（SPI×100）</h4>
+                <h4>计划 vs 实际 vs 预测（进度 %）</h4>
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={trendData}>
                     <XAxis dataKey="node" /><YAxis /><Tooltip /><Legend />
@@ -224,13 +239,13 @@ export default function DataSmart() {
         )}
         {board && !board.empty && boardKind === 'risk' && radarData.length > 0 && (
           <div className="datasmart-chart">
-            <h4>六维风险雷达（SPI/CPI/工时利用率）</h4>
+            <h4>六维风险雷达（进度/成本/质量/资源/采购/合规，风险指数 0~100）</h4>
             <ResponsiveContainer width="100%" height={300}>
               <RadarChart data={radarData} outerRadius="70%">
                 <PolarGrid />
                 <PolarAngleAxis dataKey="维度" />
-                <PolarRadiusAxis />
-                <Radar dataKey="值" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                <PolarRadiusAxis domain={[0, 100]} />
+                <Radar dataKey="风险" stroke="#ef4444" fill="#ef4444" fillOpacity={0.5} />
                 <Tooltip />
               </RadarChart>
             </ResponsiveContainer>
@@ -239,22 +254,29 @@ export default function DataSmart() {
         {board && !board.empty && boardKind !== 'trend' && boardKind !== 'risk' && (
           <div className="datasmart-metrics">
             <h4>{BOARD_TABS.find((t) => t.kind === boardKind)?.label}看板指标</h4>
-            {(board.metrics || []).length === 0 && <div className="datasmart-empty">{EMPTY}</div>}
-            <table className="datasmart-table">
-              <thead>
-                <tr><th>指标</th><th>值</th><th>公式</th><th>来源</th></tr>
-              </thead>
-              <tbody>
-                {(board.metrics || []).map((m) => (
-                  <tr key={m.id}>
-                    <td>{m.code}</td>
-                    <td>{m.value}</td>
-                    <td>{m.formula}</td>
-                    <td>{m.source_ref}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {(() => {
+              const all = board.metrics || []
+              const codes = METRIC_KIND[boardKind]
+              const rows = codes ? all.filter((m) => codes.includes(m.code)) : all
+              if (rows.length === 0) return <div className="datasmart-empty">{EMPTY}</div>
+              return (
+                <table className="datasmart-table">
+                  <thead>
+                    <tr><th>指标</th><th>值</th><th>公式</th><th>来源</th></tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((m) => (
+                      <tr key={m.id}>
+                        <td>{m.code}</td>
+                        <td>{m.value}</td>
+                        <td>{m.formula}</td>
+                        <td>{m.source_ref}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )
+            })()}
           </div>
         )}
       </div>

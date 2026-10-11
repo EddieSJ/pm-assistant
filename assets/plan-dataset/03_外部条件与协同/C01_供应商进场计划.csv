@@ -1,0 +1,3 @@
+﻿project_id,vendor_id,vendor_name,scope,committed_start,committed_finish,precondition,commitment_status,contact_person,source_material,note
+CY-DCM-2026-01,V-01,华恒智能设备（虚构）,现场设备安装与调试,2027-04-12,2027-04-23,甲方完成现场电力与网络准备,已承诺,供应商项目经理,C01 供应商进场计划,进场前置条件未确认前不得进入 V1 正式排程
+CY-DCM-2026-01,V-02,远景检测服务（虚构）,第三方检测与出证,2027-04-19,2027-04-30,被测系统冻结版本可用,已承诺,供应商技术负责人,C01 供应商进场计划,教学模拟数据

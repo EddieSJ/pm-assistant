@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { api } from '../api'
 import ChatPanel from './ChatPanel'
 import Dashboard from './Dashboard'
+import Deliverables from './Deliverables'
+import MemoryGovernance from './MemoryGovernance'
 
 const STATUS_LABELS = {
   confirmed: '已确认',
@@ -322,6 +324,8 @@ export default function ProjectBoard({ project, onBack }) {
             <div className={`tab ${tab === 'conflicts' ? 'active' : ''}`} onClick={() => setTab('conflicts')}>冲突/待确认 ({board.conflicts.length})</div>
             <div className={`tab ${tab === 'sources' ? 'active' : ''}`} onClick={() => setTab('sources')}>来源文件 ({board.sources.length})</div>
             <div className={`tab ${tab === 'documents' ? 'active' : ''}`} onClick={() => setTab('documents')}>文档 ({board.documents.length})</div>
+            <div className={`tab ${tab === 'deliverables' ? 'active' : ''}`} onClick={() => setTab('deliverables')}>🧩 成果输出</div>
+            <div className={`tab ${tab === 'memory' ? 'active' : ''}`} onClick={() => setTab('memory')}>🧠 记忆治理</div>
             <div className={`tab ${tab === 'chat' ? 'active' : ''}`} onClick={() => setTab('chat')}>💬 项目智能助手</div>
           </div>
         </div>
@@ -335,6 +339,8 @@ export default function ProjectBoard({ project, onBack }) {
       {board && tab === 'conflicts' && <ConflictsTable data={board.conflicts} />}
       {board && tab === 'sources' && <SourcesTable data={board.sources} />}
       {board && tab === 'documents' && <DocumentsPanel data={board.documents} onDelete={handleDeleteDoc} />}
+      {board && tab === 'deliverables' && <Deliverables projectId={project.id} onGenerated={load} />}
+      {board && tab === 'memory' && <MemoryGovernance projectId={project.id} onChanged={load} />}
       {tab === 'chat' && <ChatPanel projectId={project.id} />}
     </div>
   )

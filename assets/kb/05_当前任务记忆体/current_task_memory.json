@@ -1,0 +1,1455 @@
+{
+  "task_id": "project-1",
+  "project_code": "澄岳DCM项目",
+  "objective": "使用私人 Agent 整理项目事实、责任、干系人、会议行动项、财务数据和待确认事项",
+  "as_of_date": "2026-09-06",
+  "loaded_sources": [
+    {
+      "file": "01_招标文件.docx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 15:58:15"
+    },
+    {
+      "file": "02_投标响应文件.docx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 15:59:18"
+    },
+    {
+      "file": "03_项目合同及补充协议.docx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:00:37"
+    },
+    {
+      "file": "04_项目管理计划书.docx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:01:56"
+    },
+    {
+      "file": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:03:05"
+    },
+    {
+      "file": "06_对方干系人清单.xlsx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:03:38"
+    },
+    {
+      "file": "07_会议记录与邮件往来汇编.docx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:04:54"
+    },
+    {
+      "file": "08_项目财务报告与付款资料.xlsx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:06:01"
+    },
+    {
+      "file": "09_项目问题风险与变更记录.xlsx",
+      "version_or_date": "",
+      "loaded_at": "2026-09-06 16:07:01"
+    }
+  ],
+  "confirmed_facts": [
+    {
+      "field": "项目名称",
+      "value": "项目协同与经营管理数字化平台建设项目",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目编号",
+      "value": "CY-DCM-2026-01",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "招标编号",
+      "value": "CYZB-2026-017",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "采购控制价",
+      "value": "¥3,450,000.00",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "建设周期",
+      "value": "2026年10月20日至2027年4月19日",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "采购内容",
+      "value": "项目协同与经营管理数字化平台的软件许可/订阅、实施、集成、数据迁移、测试、培训、上线和质保服务",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "建设地点",
+      "value": "上海总部及采购人批准的云资源/VPC；必要时覆盖苏州制造中心",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "成功标准_业务覆盖",
+      "value": "本期10个模块范围完成，关键项目全过程可在线管理",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "成功标准_数据",
+      "value": "迁移近3年约320个项目，关键字段准确率不低于99.5%",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "成功标准_用户",
+      "value": "注册用户680人，并发用户不低于300人",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "成功标准_性能",
+      "value": "常用查询95百分位响应时间不超过3秒",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "成功标准_质量",
+      "value": "最终验收时P1/P2缺陷为0，功能测试总体通过率不低于95%",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "功能模块_F01",
+      "value": "项目组合与立项：项目分类、模板、立项申请、评审、优先级、项目组合和状态报告（必须）",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "功能模块_F10",
+      "value": "权限审计：SSO、角色、数据权限、敏感字段、导出控制、操作日志（必须）",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "接口_OA",
+      "value": "组织、审批、待办；实时/准实时；失败重试、状态回写和日志",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "阶段_启动",
+      "value": "2026-10-20至10-30；核心活动：启动、调研、计划和治理；交付物：项目计划、沟通计划、风险清单",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "阶段_验收",
+      "value": "2027-04-19；核心活动：最终验收与运维移交；交付物：验收报告、运维手册、资产清单",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "信息安全_漏洞要求",
+      "value": "上线前完成第三方安全测试，严重和高危漏洞清零",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "服务等级_P1",
+      "value": "系统不可用、核心数据损坏或重大安全事件；响应时间15分钟；4小时内恢复服务，24小时内初步报告",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "付款节点_合同生效",
+      "value": "20%，¥690,000；前提：合同生效、计划和保障到位、合法发票",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "付款节点_最终验收",
+      "value": "25%，¥862,500；前提：最终验收和资料移交完成",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "税率",
+      "value": "6%",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "质保期",
+      "value": "最终验收后12个月",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "投标有效期",
+      "value": "自投标截止之日起90日",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "投标截止时间",
+      "value": "2026年9月28日09:30",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "发布日期",
+      "value": "2026年9月5日",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "文件状态",
+      "value": "学生输入资料 / 教学模拟",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "教学说明",
+      "value": "本资料为课程教学模拟文件。企业、人员、地址、联系方式及业务数据均为虚构，不具有法律、采购、审计或人事效力。",
+      "source": "01_招标文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目名称",
+      "value": "项目协同与经营管理数字化平台建设项目",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "招标编号",
+      "value": "CYZB-2026-017",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "投标有效期",
+      "value": "90日",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "计划进场准备日期",
+      "value": "2026-10-15",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "最终验收后质保期",
+      "value": "12个月",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "平台授权账号能力",
+      "value": "720个",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "并发设计目标",
+      "value": "不少于300并发",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "历史数据迁移量",
+      "value": "约320个项目",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "关键字段准确率目标",
+      "value": "99.5%",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "功能测试通过率目标",
+      "value": "不低于95%",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "查询响应性能目标",
+      "value": "95百分位响应不超过3秒",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "安全事件响应时效",
+      "value": "15分钟响应、1小时内通知采购人",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方项目经理",
+      "value": "唐明宇",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方项目经理投入比例",
+      "value": "不低于80%",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "关键人员变更机制",
+      "value": "提前10个工作日书面申请",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "临时代理规则",
+      "value": "短期出差期间可由同等资历人员代行会议协调，但不构成正式项目经理变更",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "投标含税总价",
+      "value": "3280000",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "税率",
+      "value": "6%",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "不含税合计金额",
+      "value": "3094339.62",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "税额合计",
+      "value": "185660.38",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "平台软件许可与配置含税金额",
+      "value": "1100000.00",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "实施与项目管理含税金额",
+      "value": "800000.00",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "接口集成含税金额",
+      "value": "550000.00",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "数据迁移含税金额",
+      "value": "350000.00",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "测试、培训与质保含税金额",
+      "value": "480000.00",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "投标人",
+      "value": "杭州远序数字科技有限公司",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "采购人",
+      "value": "上海澄岳智能装备有限公司",
+      "source": "02_投标响应文件.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目名称",
+      "value": "项目协同与经营管理数字化平台建设项目",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目编号",
+      "value": "CY-DCM-2026-01",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "合同编号",
+      "value": "CYHT-2026-048",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "建设周期",
+      "value": "2026年10月20日至2027年4月19日",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "最终验收日期",
+      "value": "2027-04-19",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "质保期",
+      "value": "12个月（自最终验收之日起）",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "交付范围",
+      "value": "项目组合与立项、WBS与进度、资源与工时、预算与成本、采购与合同、风险问题变更、文档知识、经营看板、通知与移动Web、权限与审计等十个模块；不包括替换ERP/OA/HR/财务系统、原生移动APP、未经批准的新业务模块。",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方项目经理",
+      "value": "陈致远",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方项目经理",
+      "value": "唐明宇",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方关键人员变更要求",
+      "value": "提前10个工作日书面申请，替代人员能力不得降低，并完成交接",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "合同含税总价",
+      "value": "¥3,260,000.00",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "不含税金额",
+      "value": "¥3,075,471.70",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "增值税率",
+      "value": "6%",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "付款阶段与比例",
+      "value": "['20%', '20%', '30%', '25%', '5%']",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "付款里程碑日期",
+      "value": "['2026-10-15', '2026-12-18', '2027-03-19', '2027-04-19', '2028-04-18']",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方单位",
+      "value": "上海澄岳智能装备有限公司",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方单位",
+      "value": "杭州远序数字科技有限公司",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方授权代表（待确认）",
+      "value": "周启明或正式授权人",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "乙方授权代表（待确认）",
+      "value": "顾文博或正式授权人",
+      "source": "03_项目合同及补充协议.docx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "项目名称",
+      "value": "项目协同与经营管理数字化平台建设项目",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目编号",
+      "value": "CY-DCM-2026-01",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "版本",
+      "value": "V0.9 / 2026-10-16",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "计划状态",
+      "value": "启动会讨论稿，待合同基线同步",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "文档性质",
+      "value": "学生输入资料 / 教学模拟",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "范围原则（本期包含）",
+      "value": "统一的项目主数据、WBS与计划、责任、预算成本、风险问题、合同付款、文档知识和经营分析体系；连接OA、ERP、HR、财务和统一身份系统",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "范围原则（本期不包含）",
+      "value": "ERP总账重构、生产MES改造和移动原生App开发；企业战略规划系统；总账、税务申报、资金支付系统；外部客户门户；MES和设备数据实时接入",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方项目经理",
+      "value": "陈致远",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方项目经理",
+      "value": "唐明宇",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目指导委员会成员",
+      "value": "['周启明', '林若岚', '乙方交付总监']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目管理组成员",
+      "value": "['陈致远', '唐明宇', '职能负责人']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "业务与技术工作组成员",
+      "value": "['关键用户', '技术', '安全', '乙方顾问']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（1.0）",
+      "value": "['陈致远', '唐明宇']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（2.0）",
+      "value": "['林若岚']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（3.0）",
+      "value": "['高一川']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（4.0）",
+      "value": "['叶知行']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（5.0）",
+      "value": "['唐明宇']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（6.0）",
+      "value": "['陈致远']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "WBS工作包负责人（7.0）",
+      "value": "['林若岚']",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "安全设计工作包A角色（暂列）",
+      "value": "['高一川', '彭子墨']",
+      "source": "04_项目管理计划书.docx",
+      "status": "provisional"
+    },
+    {
+      "field": "责任分配原则",
+      "value": "每个关键工作包原则上只设置一个最终负责人A；陈致远负责整体协调和升级，不替代业务、技术、安全和财务职能责任；关键人员变更须书面申请批准；短期代理需会议纪要记录",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "质量与验收标准",
+      "value": "关键功能100%通过、总体通过率不低于95%，P1/P2缺陷为0；数据迁移关键字段准确率不低于99.5%；试运行不少于20个工作日；最终验收资料包括运维手册、配置清单和培训记录",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "变更控制要求",
+      "value": "范围、金额、关键日期、关键人员和验收标准的变化必须提交变更申请；未批准的建议和会议口头意见不得直接写入基线",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "风险升级阈值",
+      "value": "关键里程碑预计延迟超过5个工作日；预算偏差超过50,000元或5%；重大安全、法律或数据问题；关键人员变更",
+      "source": "04_项目管理计划书.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目名称",
+      "value": "未明确命名，但涉及数字运营中心、PMO、制造运营中心等多部门协同，覆盖架构、安全、数据迁移、测试、培训等全周期交付活动",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "provisional"
+    },
+    {
+      "field": "项目周期（甲方）",
+      "value": "2026-09-05 至 2027-04-30",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目周期（乙方）",
+      "value": "2026-10-20 至 2027-04-19",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方项目经理",
+      "value": "陈致远",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方项目经理",
+      "value": "唐明宇",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方业务负责人",
+      "value": "林若岚",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方解决方案架构师",
+      "value": "叶知行",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方安全负责人",
+      "value": "罗清和",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方安全负责人",
+      "value": "彭子墨",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方采购负责人",
+      "value": "赵宁",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方财务负责人",
+      "value": "孙雅琴",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "甲方法务负责人",
+      "value": "何静",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "关键用户代表（制造）",
+      "value": "蒋涛",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "关键用户代表（销售）",
+      "value": "李珊",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "姓名疑似错字（林若岚/林若兰）",
+      "value": "林若岚（主表） vs 林若兰（会议记录）",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "姓名疑似错字（李珊/李姗）",
+      "value": "李珊（主表） vs 李姗（会议记录）",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "临时代理记录",
+      "value": "叶知行于2026-11-10至2026-11-15代行唐明宇周会协调职责",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "版本信息",
+      "value": "V1.2｜2026-12-20",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "清单用途",
+      "value": "用于教学沟通计划",
+      "source": "06_对方干系人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "安全约束",
+      "value": "联系方式为占位，不得实际联系；密级分内部/秘密/机密",
+      "source": "06_对方干系人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "关系负责人归属",
+      "value": "由澄岳装备内部人员担任（如陈致远、高一川等）",
+      "source": "06_对方干系人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方单位",
+      "value": "杭州远序数字科技有限公司",
+      "source": "06_对方干系人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "外部支持单位类型",
+      "value": "['教学模拟云服务商', '教学模拟测评机构', '教学模拟审计机构']",
+      "source": "06_对方干系人清单.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目名称",
+      "value": "项目协同与经营管理数字化平台建设项目",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目编号",
+      "value": "CY-DCM-2026-01",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "资料期间",
+      "value": "2026-10-20至2026-12-31",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "合同工期起点",
+      "value": "2026-10-20",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "上线日期（计划）",
+      "value": "2027-04-12",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "provisional"
+    },
+    {
+      "field": "验收日期（合同）",
+      "value": "2027-04-19",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "provisional"
+    },
+    {
+      "field": "甲方项目经理",
+      "value": "陈致远",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "乙方项目经理",
+      "value": "唐明宇",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "临时代理人",
+      "value": "叶知行",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "林若兰/林若岚是否同一人",
+      "value": "待确认",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "李姗/李珊是否同一人",
+      "value": "待确认",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "关键用户代表（甲方）",
+      "value": "['林若岚', '高一川', '赵宁', '孙雅琴', '彭子墨']",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "12月实际成本",
+      "value": "1347200",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "顾问服务票金额",
+      "value": "20000",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "needs_confirmation"
+    },
+    {
+      "field": "首付款前提条件",
+      "value": "合同、项目计划、履约承诺和发票齐全",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目周会时间",
+      "value": "每周三下午",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "会议纪要发布时限",
+      "value": "会后1个工作日内",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "ERP项目编码规则状态",
+      "value": "未统一",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "总体设计评审结论",
+      "value": "有条件通过",
+      "source": "07_会议记录与邮件往来汇编.docx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目基准日",
+      "value": "2026-12-31",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "合同编号线索",
+      "value": "CYHT-2026-048",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "采购控制价",
+      "value": "3450000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "投标报价",
+      "value": "3280000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "合同总价",
+      "value": "3260000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "内部批准预算",
+      "value": "3680000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "预算明细合计",
+      "value": "3675000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "累计已支付",
+      "value": "1304000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "月报实际成本",
+      "value": "1347200",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "预计完工成本",
+      "value": "3646000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "发票台账合计（含税）",
+      "value": "1284000",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "实际成本明细合计",
+      "value": "1367200",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "付款责任人",
+      "value": "孙雅琴",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "内部人工责任人",
+      "value": "陈致远",
+      "source": "08_项目财务报告与付款资料.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "基准日期",
+      "value": "2026-12-31",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "项目阶段",
+      "value": "设计评审后、构建启动阶段",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "provisional"
+    },
+    {
+      "field": "风险责任人",
+      "value": "['高一川', '林若岚', '杜若飞', '陈致远', '孙雅琴', '唐明宇']",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "问题责任人",
+      "value": "['高一川', '林若岚', '唐明宇', '陈致远', '孙雅琴']",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "决策人/机构",
+      "value": "['双方项目经理', '项目指导委员会', '设计评审组', '双方授权代表']",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "关键里程碑",
+      "value": "2027-04-12（生产切换）、2027-04-19（最终验收）",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "变更审批规则",
+      "value": "未批准的申请不得作为新基线",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "风险登记维护机制",
+      "value": "风险由责任人维护、项目经理复核",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    },
+    {
+      "field": "问题关闭要求",
+      "value": "必须有责任人、期限和关闭证据",
+      "source": "09_项目问题风险与变更记录.xlsx",
+      "status": "confirmed"
+    }
+  ],
+  "conflicts": [
+    {
+      "category": "项目编号",
+      "description": "主合同正文使用项目编号CY-DCM-2026-01，而合同编号为CYHT-2026-048，二者不一致且未说明关联关系",
+      "source_a": "第一条第1款：项目编号为CY-DCM-2026-01",
+      "source_b": "补充协议（一）表格：合同编号 | CYHT-2026-048"
+    },
+    {
+      "category": "上线与验收日期",
+      "description": "主合同第四条写明‘2027年4月19日最终验收’，补充协议注明‘计划于2027年4月12日前完成生产切换，2027年4月19日完成最终验收’，二者虽不冲突，但‘生产切换’未在主合同定义，构成新增关键节点，需确认是否已走变更审批",
+      "source_a": "第四条第2款：2027年4月19日最终验收",
+      "source_b": "补充协议事项栏：计划于2027年4月12日前完成生产切换，2027年4月19日完成最终验收；二者为不同里程碑"
+    },
+    {
+      "category": "项目经理职责",
+      "description": "主合同第五条要求乙方项目经理‘全程投入原则上不低于80%’，补充协议强调‘临时代理会议职责须留痕，不构成人员变更’，但未明确代理是否影响80%投入义务的履行认定标准",
+      "source_a": "第五条第2款：乙方项目经理全程投入原则上不低于80%",
+      "source_b": "补充协议事项栏：临时代理会议职责须留痕，不构成人员变更"
+    },
+    {
+      "category": "责任分配",
+      "description": "安全设计工作包当前暂列两名最终负责人A（高一川、彭子墨），违反‘每个关键工作包原则上只设置一个最终负责人A’原则",
+      "source_a": "四、责任分配原则：每个关键工作包原则上只设置一个最终负责人A",
+      "source_b": "四、责任分配原则：本版安全设计工作包暂列高一川和彭子墨共同为A，需在设计评审前确认唯一A。"
+    },
+    {
+      "category": "人员",
+      "description": "甲方业务负责人姓名在主表为‘林若岚’，在会议记录（MOM-2026-1113-02）中记为‘林若兰’，存在疑似错字",
+      "source_a": "C02 | 林若岚 | ...",
+      "source_b": "HR-002 | 林若岚 | 林若兰 | ... | MOM-2026-1113-02"
+    },
+    {
+      "category": "人员",
+      "description": "甲方关键用户代表（销售）姓名在主表为‘李珊’，在会议记录（MOM-2026-1218-03）中记为‘李姗’，存在疑似错字",
+      "source_a": "C11 | 李珊 | ...",
+      "source_b": "HR-003 | 李珊 | 李姗 | ... | MOM-2026-1218-03"
+    },
+    {
+      "category": "人员",
+      "description": "林若兰与林若岚姓名不一致，原文未确认是否同一人",
+      "source_a": "MOM-2026-1113-02（林若兰）",
+      "source_b": "MOM-2026-1020-01（林若岚）"
+    },
+    {
+      "category": "人员",
+      "description": "李姗与李珊姓名不一致，原文未确认是否同一人",
+      "source_a": "MOM-2026-1218-03（李姗）",
+      "source_b": "MOM-2026-1113-02（李珊）"
+    },
+    {
+      "category": "项目编号",
+      "description": "邮件EM02标题使用CY-DCM-2026-10，正文及主编号为CY-DCM-2026-01",
+      "source_a": "EM02（标题）",
+      "source_b": "文件头及所有会议编号（CY-DCM-2026-01）"
+    },
+    {
+      "category": "财务",
+      "description": "EM05提及20,000元顾问服务票是否计入12月成本待确认，与已列1,347,200元成本口径不一致",
+      "source_a": "EM05（20,000元待确认）",
+      "source_b": "EM05（1,347,200元已计入）"
+    },
+    {
+      "category": "职责",
+      "description": "会议记录称叶知行‘代行乙方项目经理的周会协调职责’，但EM03明确‘项目经理职责未变’；口头安排未替代正式变更审批",
+      "source_a": "需求与接口专题会记录",
+      "source_b": "EM03"
+    },
+    {
+      "category": "财务",
+      "description": "第二期付款金额（652000）与对应发票INV-2026-1208金额（632000）相差20,000元",
+      "source_a": "【工作表：合同付款与流水】第2行支付金额",
+      "source_b": "【工作表：发票登记】INV-2026-1208含税金额"
+    },
+    {
+      "category": "财务",
+      "description": "累计已支付（1304000）与发票台账合计（1284000）相差20,000元，与AC07顾问费金额一致，但该笔未见对应发票",
+      "source_a": "【工作表：管理汇总】累计已支付",
+      "source_b": "【工作表：发票登记】合计"
+    },
+    {
+      "category": "财务",
+      "description": "月报实际成本（1347200）与实际成本明细合计（1367200）相差20,000元，明确系AC07顾问费未纳入月报",
+      "source_a": "【工作表：管理汇总】月报实际成本",
+      "source_b": "【工作表：实际成本明细】合计"
+    },
+    {
+      "category": "预算",
+      "description": "批准预算（3680000）与预算明细合计（3675000）相差5,000元，B05备注‘草案漏列5,000’",
+      "source_a": "【工作表：管理汇总】内部批准预算",
+      "source_b": "【工作表：预算批准与明细】合计"
+    },
+    {
+      "category": "责任",
+      "description": "R04与I04均指出‘安全设计存在两个最终负责人A’，但R04责任人列为陈致远，I04责任人亦为陈致远，未体现双A具体人员，责任冲突未闭环",
+      "source_a": "R04：安全责任双A导致审批不清｜责任人：陈致远",
+      "source_b": "I04：安全设计存在两个最终负责人A｜责任人：陈致远"
+    },
+    {
+      "category": "里程碑",
+      "description": "R08指出‘4月上线和验收表述混淆’，而D04已明确‘4月12日生产切换、4月19日最终验收’，但R08状态仍为‘开放’且注明‘更新版计划仍未分列’，表明计划基线未同步生效",
+      "source_a": "R08：4月上线和验收表述混淆｜状态：开放｜来源：补充协议/邮件",
+      "source_b": "D04：4月12日生产切换、4月19日最终验收｜状态：生效｜依据：补充协议（一）"
+    },
+    {
+      "category": "财务口径",
+      "description": "I05与I06均显示‘少计20,000元’，但未说明是否同一笔差额；财务资料未提供原始凭证或勾稽关系，无法确认是否重复或关联",
+      "source_a": "I05：财务月报少计20,000元",
+      "source_b": "I06：发票台账少登记20,000元"
+    },
+    {
+      "category": "人员",
+      "description": "I07指出‘会议姓名存在错字’，但未列明错字内容及正确姓名，人名规范化缺失，影响行动项归属准确性",
+      "source_a": "I07：会议姓名存在错字｜责任人：陈致远",
+      "source_b": ""
+    }
+  ],
+  "actions": [
+    {
+      "action": "编制投标文件，确保资格册、商务册、技术册、项目管理册完整响应招标文件全部章节及附件要求",
+      "owner": "投标人",
+      "due_date": "2026-09-28T09:30:00",
+      "status": "open",
+      "source": "01_招标文件.docx"
+    },
+    {
+      "action": "提交书面答疑请求（如需），不得晚于2026-09-16 17:00",
+      "owner": "投标人",
+      "due_date": "2026-09-16T17:00:00",
+      "status": "open",
+      "source": "01_招标文件.docx"
+    },
+    {
+      "action": "确认投标保证金人民币50,000元已按教学要求准备（注：无真实收款账户）",
+      "owner": "投标人",
+      "due_date": "2026-09-28T09:30:00",
+      "status": "open",
+      "source": "01_招标文件.docx"
+    },
+    {
+      "action": "确认投标报价及分项构成是否符合招标控制价要求",
+      "owner": "澄岳装备供应链中心/PMO",
+      "due_date": "",
+      "status": "open",
+      "source": "02_投标响应文件.docx"
+    },
+    {
+      "action": "评估D03偏差项‘统一身份实时接口’在设计阶段的确认路径与风险",
+      "owner": "澄岳装备数字运营中心/信息安全",
+      "due_date": "",
+      "status": "open",
+      "source": "02_投标响应文件.docx"
+    },
+    {
+      "action": "确认甲方授权代表身份及签章资质",
+      "owner": "法务合规中心",
+      "due_date": "",
+      "status": "open",
+      "source": "03_项目合同及补充协议.docx"
+    },
+    {
+      "action": "确认乙方授权代表身份及签章资质",
+      "owner": "法务合规中心",
+      "due_date": "",
+      "status": "open",
+      "source": "03_项目合同及补充协议.docx"
+    },
+    {
+      "action": "核验乙方收款账户信息并完成正式盖章确认",
+      "owner": "财务中心",
+      "due_date": "",
+      "status": "open",
+      "source": "03_项目合同及补充协议.docx"
+    },
+    {
+      "action": "组织需求基线评审并完成签字确认",
+      "owner": "甲方项目经理（陈致远）",
+      "due_date": "2026-11-20",
+      "status": "open",
+      "source": "03_项目合同及补充协议.docx"
+    },
+    {
+      "action": "提交详细项目计划并获取甲方书面批准（形成计划基线）",
+      "owner": "乙方项目经理（唐明宇）",
+      "due_date": "2026-10-25",
+      "status": "open",
+      "source": "03_项目合同及补充协议.docx"
+    },
+    {
+      "action": "在设计评审前确认安全设计工作包唯一最终负责人A",
+      "owner": "高一川、彭子墨、陈致远",
+      "due_date": "2026-12-25前（设计评审日）",
+      "status": "open",
+      "source": "04_项目管理计划书.docx"
+    },
+    {
+      "action": "将本计划与合同基线同步更新",
+      "owner": "陈致远、唐明宇",
+      "due_date": "待合同签署后尽快",
+      "status": "open",
+      "source": "04_项目管理计划书.docx"
+    },
+    {
+      "action": "完成需求规格V1.0评审、问题关闭和签署",
+      "owner": "林若岚、关键用户、乙方顾问",
+      "due_date": "2026-11-20前",
+      "status": "open",
+      "source": "04_项目管理计划书.docx"
+    },
+    {
+      "action": "核实‘林若岚’与‘林若兰’是否为同一人，确认会议记录中姓名错字问题",
+      "owner": "陈致远",
+      "due_date": "",
+      "status": "open",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx"
+    },
+    {
+      "action": "核实‘李珊’与‘李姗’是否为同一人，确认会议记录中姓名错字问题",
+      "owner": "陈致远",
+      "due_date": "",
+      "status": "open",
+      "source": "05_甲乙双方项目团队与负责人清单.xlsx"
+    },
+    {
+      "action": "人工确认所有外发沟通内容（含会议纪要、邮件草稿等）",
+      "owner": "甲乙方PM / 相关授权人员",
+      "due_date": "",
+      "status": "open",
+      "source": "06_对方干系人清单.xlsx"
+    },
+    {
+      "action": "不得使用占位联系方式进行实际联系",
+      "owner": "全体项目成员",
+      "due_date": "",
+      "status": "open",
+      "source": "06_对方干系人清单.xlsx"
+    },
+    {
+      "action": "发布详细项目计划V1.0",
+      "owner": "唐明宇",
+      "due_date": "2026-10-25",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "确认关键用户和访谈安排",
+      "owner": "林若岚",
+      "due_date": "2026-10-24",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "提供现有系统接口和数据清单",
+      "owner": "高一川",
+      "due_date": "2026-10-28",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "确认合同首付款资料要求",
+      "owner": "赵宁/孙雅琴",
+      "due_date": "2026-10-26",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "建立风险、问题和行动项台账",
+      "owner": "陈致远",
+      "due_date": "2026-10-23",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "形成ERP项目编码映射表",
+      "owner": "高一川",
+      "due_date": "2026-11-30",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "补充历史项目客户行业字段清洗规则",
+      "owner": "杜若飞",
+      "due_date": "2026-11-25",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "确认需求规格中的移动Web范围",
+      "owner": "林若兰",
+      "due_date": "2026-11-18",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "补交乙方PM临时代理书面说明",
+      "owner": "唐明宇",
+      "due_date": "2026-11-18",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "更新接口清单并标注系统责任人",
+      "owner": "叶知行",
+      "due_date": "2026-11-22",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "完成需求规格V1.0正式签署",
+      "owner": "林若岚",
+      "due_date": "2026-12-25",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "确认安全设计唯一最终负责人",
+      "owner": "陈致远",
+      "due_date": "2027-01-06",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "补充ERP接口失败重试和对账设计",
+      "owner": "叶知行",
+      "due_date": "2027-01-08",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "修订12月财务月报差额",
+      "owner": "孙雅琴",
+      "due_date": "2027-01-05",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "在计划中分列4月12日上线和4月19日验收",
+      "owner": "陈致远",
+      "due_date": "2027-01-10",
+      "status": "open",
+      "source": "07_会议记录与邮件往来汇编.docx"
+    },
+    {
+      "action": "核对第二期付款652000元与发票INV-2026-1208（632000元）差异20,000元原因及是否补票",
+      "owner": "孙雅琴",
+      "due_date": "",
+      "status": "open",
+      "source": "08_项目财务报告与付款资料.xlsx"
+    },
+    {
+      "action": "修订预算明细表，补充B05培训资料与场地5,000元，并更新审批状态",
+      "owner": "人力资源中心",
+      "due_date": "",
+      "status": "open",
+      "source": "08_项目财务报告与付款资料.xlsx"
+    },
+    {
+      "action": "将AC07外部顾问费20,000元纳入2026年12月月报实际成本并修正累计值",
+      "owner": "孙雅琴",
+      "due_date": "",
+      "status": "open",
+      "source": "08_项目财务报告与付款资料.xlsx"
+    },
+    {
+      "action": "确认‘本页含待核差异’所指具体差异项并闭环记录",
+      "owner": "数字运营中心",
+      "due_date": "",
+      "status": "open",
+      "source": "08_项目财务报告与付款资料.xlsx"
+    },
+    {
+      "action": "专题确认并冻结ERP项目编码映射",
+      "owner": "高一川",
+      "due_date": "2027-01-08",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    },
+    {
+      "action": "关闭三个待决业务问题以推进需求签署",
+      "owner": "林若岚",
+      "due_date": "2027-01-04",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    },
+    {
+      "action": "逐项勾稽并修订财务月报",
+      "owner": "孙雅琴",
+      "due_date": "2027-01-05",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    },
+    {
+      "action": "提前报备临时代理和交接以保障乙方关键人员可用性",
+      "owner": "唐明宇",
+      "due_date": "",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    },
+    {
+      "action": "确认唯一A并更新RACI",
+      "owner": "陈致远",
+      "due_date": "2027-01-06",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    },
+    {
+      "action": "提前申请并准备模拟环境应对接口环境开通延迟",
+      "owner": "高一川",
+      "due_date": "2027-01-15",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    },
+    {
+      "action": "计划分列两个里程碑（4月12日切换、4月19日验收）",
+      "owner": "陈致远",
+      "due_date": "",
+      "status": "open",
+      "source": "09_项目问题风险与变更记录.xlsx"
+    }
+  ],
+  "outputs": [],
+  "next_steps": [],
+  "sensitive_data_stored": false
+}

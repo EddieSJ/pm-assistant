@@ -38,6 +38,30 @@ def _resolve(rel_path: str) -> Path:
     return p if p.is_absolute() else (BASE_DIR / p).resolve()
 
 
+# 工作区根目录：课程3 计划数据包（03_模拟数据包-课程3）与课程资料目录同级。
+WORKSPACE_DIR = BACKEND_DIR.parent.parent
+
+
+def _resolve_plan(raw: str) -> Path:
+    """解析课程3 计划数据包目录。
+
+    优先级：显式绝对路径 > 工作区根目录下的默认目录 > 课程资料目录下的同名目录。
+    """
+    if raw and Path(raw).is_absolute():
+        return Path(raw)
+    names = [raw] if raw else ["./03_模拟数据包-课程3"]
+    for name in names:
+        cand = (WORKSPACE_DIR / name).resolve()
+        if cand.exists():
+            return cand
+    # 回退：课程资料目录（兼容把数据包放进 01_课程资料 的部署形态）
+    for name in names:
+        cand = (BASE_DIR / name).resolve()
+        if cand.exists():
+            return cand
+    return (WORKSPACE_DIR / names[0]).resolve()
+
+
 class Config:
     # ---- LLM ----
     api_key = _get("DASHSCOPE_API_KEY")
@@ -57,6 +81,11 @@ class Config:
     input_dir = _resolve(_get("AGENT_INPUT_DIR", "./06_项目输入资料包"))
     output_dir = _resolve(_get("AGENT_OUTPUT_DIR", "./results"))
     log_dir = _resolve(_get("AGENT_LOG_DIR", "./logs"))
+
+    # 课程3 计划材料数据包（A/B/C/D 四组，见 03_模拟数据包-课程3/README.md）。
+    # 注意：该数据包位于「工作区根目录」，与课程资料目录（BASE_DIR=01_课程资料）同级，
+    # 因此以 WORKSPACE_DIR 为锚点解析；容器部署时用 AGENT_PLAN_DATASET 指向镜像内路径。
+    plan_dataset_dir = _resolve_plan(_get("AGENT_PLAN_DATASET", ""))
 
     # ---- 本地数据 ----
     _data_override = _get("AGENT_DATA_DIR", "")

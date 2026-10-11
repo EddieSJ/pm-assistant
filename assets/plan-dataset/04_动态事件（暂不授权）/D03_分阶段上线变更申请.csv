@@ -1,0 +1,2 @@
+﻿project_id,event_id,event_type,change_id,issuer,issued_at,requested_scope,schedule_impact_days,cost_impact_value,cost_currency,event_authority,approval_status,required_action,note
+CY-DCM-2026-01,D03,分阶段上线变更申请,CHG-CY-2027-004,业务方,2027-04-05 16:40:00,生产切换拆分为两阶段执行，第一阶段先上线核心模块,4,45000,元,仅情景模拟,待批准,"只创建 S3 情景，记录 +4 工作日与增量成本 45,000 元；不得进入 V1",V1 冻结后由教师发放；成本为估算值

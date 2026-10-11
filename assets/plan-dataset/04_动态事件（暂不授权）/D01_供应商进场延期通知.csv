@@ -1,0 +1,2 @@
+﻿project_id,event_id,event_type,issuer,issued_at,vendor_id,original_committed_start,new_committed_start,precondition_change,event_authority,approval_status,required_action,note
+CY-DCM-2026-01,D01,供应商进场延期通知,华恒智能设备（虚构）项目经理,2027-04-05 10:20:00,V-01,2027-04-12,2027-04-19,甲方现场准备时间相应顺延，新增前置条件：现场电力验收单需先行签署,条件生效,已通知/待甲方确认,保留 C01 原承诺，追加 P010 可用性事件与条件；不直接重算 V1,V1 冻结后由教师发放

@@ -55,6 +55,12 @@ def create_project(body: ProjectCreate):
         "INSERT INTO projects (name, folder_path, description, created_at, updated_at) VALUES (?,?,?,?,?)",
         (body.name.strip(), str(folder.resolve()), body.description, db.now(), db.now()),
     )
+    # F-61 文件变化监听：新建项目即启动守护线程（每 5 秒检查数据源变化）
+    try:
+        import datasmart
+        datasmart.watch_loop(pid)
+    except Exception:
+        pass
     return {"id": pid, "name": body.name.strip(), "folder_path": str(folder.resolve())}
 
 
@@ -84,7 +90,9 @@ def delete_project(pid: int):
     if not rows:
         raise HTTPException(404, "项目不存在")
     for table in ("sources", "facts", "conflicts", "actions", "stakeholders", "finance",
-                  "memories_working", "memories_task", "memories_longterm", "documents", "chat_messages"):
+                  "memories_working", "memories_task", "memories_longterm", "memory_audit",
+                  "documents", "chat_messages", "data_sources", "clean_logs", "snapshots",
+                  "metrics", "alerts", "advices"):
         db.execute(f"DELETE FROM {table} WHERE project_id=?", (pid,))
     db.execute("DELETE FROM projects WHERE id=?", (pid,))
     return {"deleted": True, "name": rows[0]["name"]}

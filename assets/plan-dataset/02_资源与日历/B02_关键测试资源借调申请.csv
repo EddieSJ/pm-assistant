@@ -1,0 +1,3 @@
+﻿project_id,request_id,resource_id,resource_name,requested_by_department,requested_capacity_hours_per_day,requested_period_start,requested_period_end,approval_status,approved_capacity_hours_per_day,effective_condition,approver,submitted_at,impact_note,note
+CY-DCM-2026-01,REQ-2027-011,P011,何嘉悦,测试与质量部,4.0,2027-04-05,2027-04-16,审批中,0.0,须在 2027-04-06 前完成审批方可计入正式容量,资源经理,2027-03-31 18:30:00,缓解 P004 在 04-06 至 04-08 的多活动并发超载,姓名已出现但审批未完成，正式容量仍为 0
+CY-DCM-2026-01,REQ-2027-012,P010,王楠,测试与质量部,4.0,2027-04-05,2027-04-16,已批准,4.0,远程支持，需项目组确认每日协同时段,资源经理,2027-03-31 18:30:00,为关键测试提供远程支持,外部顾问已批准，容量可计入 V1

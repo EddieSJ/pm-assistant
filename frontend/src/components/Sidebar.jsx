@@ -1,4 +1,4 @@
-export default function Sidebar({ view, onHome, onDatasmart }) {
+export default function Sidebar({ view, onHome, onDatasmart, onPlanning }) {
   return (
     <aside className="sidebar">
       <div className="logo">
@@ -6,7 +6,7 @@ export default function Sidebar({ view, onHome, onDatasmart }) {
         项目管理智能助手
       </div>
       <div
-        className={`nav-item ${view === 'projects' ? 'active' : ''}`}
+        className={`nav-item ${view === 'projects' || view === 'board' ? 'active' : ''}`}
         onClick={onHome}
       >
         <span>📁</span> 项目全局管理
@@ -16,6 +16,12 @@ export default function Sidebar({ view, onHome, onDatasmart }) {
         onClick={onDatasmart}
       >
         <span>📊</span> 数据智能与决策
+      </div>
+      <div
+        className={`nav-item ${view === 'planning' ? 'active' : ''}`}
+        onClick={onPlanning}
+      >
+        <span>🗓</span> 计划与资源智能调度
       </div>
       <div className="footer">
         私人智能体 · 本地部署<br />

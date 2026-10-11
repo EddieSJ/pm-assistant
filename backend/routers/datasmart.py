@@ -79,6 +79,7 @@ def board(pid: int, kind: str):
         m = {r["code"]: r["value"] for r in db.query(
             "SELECT code, value FROM metrics WHERE project_id=? AND snapshot_id=?", (pid, s["id"]))}
         trend.append({"node": s["node_label"], "date": s["data_date"], "revision": s["revision"],
+                      "progress_plan": m.get("progress_plan"), "progress_actual": m.get("progress_actual"),
                       "progress_dev": m.get("progress_dev"), "spi": m.get("SPI"),
                       "cpi": m.get("CPI"), "eac": m.get("EAC")})
     return {"kind": kind, "snapshot": snap, "metrics": metrics, "alerts": alerts,
